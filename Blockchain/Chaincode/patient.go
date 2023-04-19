@@ -3,26 +3,56 @@ package main
 import (
 	"encoding/json"
 	. "fmt"
+	"strings"
 	"time"
 )
 
-func (c *Chaincode) RegisterPatient(ctx CustomTransactionContextInterface, aadhaar, permCon string) error {
+func (c *Chaincode) RegisterPatient(ctx CustomTransactionContextInterface, patientID, permCon string) error {
 	existing := ctx.GetData()
+
 	if existing != nil {
-		return Errorf("Aadhaar ID allready exists")
+		return Errorf("Patient ID already exists")
 	}
 	consent := Consent{
 		DocTyp:              CONSENT,
-		ID:                  aadhaar,
+		ID:                  patientID,
 		PermanentConsenters: make(map[string]bool),
 		TemporaryConsenters: make(map[string]int64),
 	}
-	consent.PermanentConsenters[aadhaar] = true
+	consent.PermanentConsenters[patientID] = true
 	consent.PermanentConsenters[permCon] = true
 
 	consentAsByte, _ := json.Marshal(consent)
 
-	return ctx.GetStub().PutState(aadhaar, consentAsByte)
+	return ctx.GetStub().PutState(patientID, consentAsByte)
+}
+
+func (c *Chaincode) GetAllConsents(ctx CustomTransactionContextInterface) ([]Consent, error) {
+	iterator, err := ctx.GetStub().GetStateByRange("", "")
+	if err != nil {
+		return nil, err
+	}
+	defer iterator.Close()
+
+	var consents []Consent
+
+	for iterator.HasNext() {
+		item, err := iterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		if strings.HasPrefix(item.Key, "CONSENT") {
+			var consent Consent
+			err = json.Unmarshal(item.Value, &consent)
+			if err != nil {
+				return nil, err
+			}
+			consents = append(consents, consent)
+		}
+	}
+
+	return consents, nil
 }
 
 func (c *Chaincode) UpdateTempConsent(ctx CustomTransactionContextInterface, consentID, typeOfUpdate, to string, till int64) error {

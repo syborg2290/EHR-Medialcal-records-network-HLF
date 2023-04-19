@@ -8,7 +8,20 @@ const (
 	TESTS     = "TESTS"
 	TREATMENT = "TREATMENT"
 	CONSENT   = "CONSENT"
+	DOCTOR    = "DOCTOR"
 )
+
+type Doctor struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	Specialty   string `json:"specialty"`
+	LicenseNo   string `json:"license_no"`
+	PhoneNumber string `json:"phone_number"`
+	Address     string `json:"address"`
+	CreatedAt   int64  `json:"created_at"`
+	UpdatedAt   int64  `json:"updated_at"`
+}
 
 // Report of patient
 type Report struct {
@@ -75,9 +88,9 @@ type Treatment struct {
 // Consent model file
 type Consent struct {
 	DocTyp              string           `json:"docTyp"`
-	ID                  string           `json:"patient_aadhaar"`
+	ID                  string           `json:"patient__id"`
 	PermanentConsenters map[string]bool  `json:"parma_consenters"` // list of permanent consenter
 	TemporaryConsenters map[string]int64 `josn:"temp_consenters"`  // id of consenters mapped to expiry time unix
-// 	Status              string           `json:"status"`           // defined status crises status
-// 	Track               []string         `json:"track"`            // track to who he/she meet (id)
+	// 	Status              string           `json:"status"`           // defined status crises status
+	// 	Track               []string         `json:"track"`            // track to who he/she meet (id)
 }

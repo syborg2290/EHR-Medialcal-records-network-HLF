@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	. "fmt"
 	"strconv"
 	"time"
@@ -179,4 +180,78 @@ func (c *Chaincode) AddMediaToTreatment(ctx CustomTransactionContextInterface, t
 	treatment.UpdateTime = time.Now().Unix()
 	treatmentAsByte, _ := json.Marshal(treatment)
 	return treatment.MediaFileLocation, ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
+}
+
+// Create a new doctor
+func (c *Chaincode) createDoctor(ctx CustomTransactionContextInterface, id string, name string, email string, specialty string, licenseNo string, phoneNumber string, address string) error {
+	// Check if the doctor with the given ID already exists
+	exists, err := c.doctorExists(ctx, id)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return fmt.Errorf("the doctor with ID %s already exists", id)
+	}
+
+	// Create a new doctor struct
+	doctor := Doctor{
+		ID:          id,
+		Name:        name,
+		Email:       email,
+		Specialty:   specialty,
+		LicenseNo:   licenseNo,
+		PhoneNumber: phoneNumber,
+		Address:     address,
+		CreatedAt:   time.Now().Unix(),
+		UpdatedAt:   time.Now().Unix(),
+	}
+
+	// Convert the doctor struct to JSON format
+	doctorJSON, err := json.Marshal(doctor)
+	if err != nil {
+		return err
+	}
+
+	// Save the doctor to the world state
+	err = ctx.GetStub().PutState(id, doctorJSON)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// doctorExists returns true if the doctor with given ID exists in the ledger
+func (c *Chaincode) doctorExists(ctx CustomTransactionContextInterface, id string) (bool, error) {
+	doctorJSON, err := ctx.GetStub().GetState(id)
+	if err != nil {
+		return false, err
+	}
+	return doctorJSON != nil, nil
+}
+
+// getAllDoctors returns all doctors in the ledger
+func (s *Chaincode) getAllDoctors(ctx CustomTransactionContextInterface) ([]Doctor, error) {
+	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	var doctors []Doctor
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		var doctor Doctor
+		err = json.Unmarshal(queryResponse.Value, &doctor)
+		if err != nil {
+			return nil, err
+		}
+		doctors = append(doctors, doctor)
+	}
+
+	return doctors, nil
 }

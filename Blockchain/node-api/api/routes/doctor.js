@@ -81,4 +81,30 @@ routes.put('/treatment/addmediafile',(req,res)=>{
     })
 })
 
+// createDoctor route
+routes.post('/doctors', (req, res) => {
+    contract('INVOKE', ['CreateDoctor', req.body.name, req.body.specialty], (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        res.status(200).json({
+          message: `Successfully created doctor ${req.body.name}`,
+          doctor_id: payload.toString(),
+        });
+      }
+    });
+  });
+  
+  // getAllDoctors route
+  routes.get('/doctors', (req, res) => {
+    contract('QUERY', ['GetAllDoctors'], (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const doctors = JSON.parse(payload);
+        res.status(200).json(doctors);
+      }
+    });
+  });
+
 module.exports = routes
