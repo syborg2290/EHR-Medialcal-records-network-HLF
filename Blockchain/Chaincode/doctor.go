@@ -231,25 +231,26 @@ func (c *Chaincode) doctorExists(ctx CustomTransactionContextInterface, id strin
 }
 
 // getAllDoctors returns all doctors in the ledger
-func (s *Chaincode) getAllDoctors(ctx CustomTransactionContextInterface) ([]Doctor, error) {
-	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
+func (s *Chaincode) getAllDoctors(ctx CustomTransactionContextInterface) ([]*Doctor, error) {
+	doctorIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(DOCTOR, []string{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get all doctors: %v", err)
 	}
-	defer resultsIterator.Close()
+	defer doctorIterator.Close()
 
-	var doctors []Doctor
-	for resultsIterator.HasNext() {
-		queryResponse, err := resultsIterator.Next()
+	var doctors []*Doctor
+	for doctorIterator.HasNext() {
+		doctorResult, err := doctorIterator.Next()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to iterate over all doctors: %v", err)
 		}
 
-		var doctor Doctor
-		err = json.Unmarshal(queryResponse.Value, &doctor)
+		doctor := new(Doctor)
+		err = json.Unmarshal(doctorResult.GetValue(), doctor)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to unmarshal doctor data: %v", err)
 		}
+
 		doctors = append(doctors, doctor)
 	}
 
