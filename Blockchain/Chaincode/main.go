@@ -13,7 +13,7 @@ type Chaincode struct {
 func main() {
 	crmContract := new(Chaincode)
 	crmContract.TransactionContextHandler = new(CustomTransactionContext)
-	crmContract.BeforeTransaction = GetWorldState
+	// crmContract.BeforeTransaction = GetWorldState
 
 	cc, err := contractapi.NewChaincode(crmContract)
 

@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	. "fmt"
-	"strings"
 	"time"
 )
 
@@ -27,29 +27,36 @@ func (c *Chaincode) RegisterPatient(ctx CustomTransactionContextInterface, patie
 	return ctx.GetStub().PutState(patientID, consentAsByte)
 }
 
-func (c *Chaincode) GetAllConsents(ctx CustomTransactionContextInterface) ([]Consent, error) {
-	iterator, err := ctx.GetStub().GetStateByRange("", "")
+func (c *Chaincode) GetAllConsents(ctx CustomTransactionContextInterface) ([]*Consent, error) {
+	// Create a new query string to get all CONSENT documents
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s"}}`, CONSENT)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to execute query: %v", err)
 	}
-	defer iterator.Close()
+	defer queryResults.Close()
 
-	var consents []Consent
+	// Create a slice to hold the results
+	var consents []*Consent
 
-	for iterator.HasNext() {
-		item, err := iterator.Next()
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
 		}
 
-		if strings.HasPrefix(item.Key, "CONSENT") {
-			var consent Consent
-			err = json.Unmarshal(item.Value, &consent)
-			if err != nil {
-				return nil, err
-			}
-			consents = append(consents, consent)
+		// Deserialize the document into a Consent struct
+		var consent Consent
+		err = json.Unmarshal(queryResult.Value, &consent)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize consent: %v", err)
 		}
+
+		// Add the consent to the results slice
+		consents = append(consents, &consent)
 	}
 
 	return consents, nil
@@ -96,18 +103,21 @@ func (c *Chaincode) UpdatePermConsent(ctx CustomTransactionContextInterface, con
 func (c *Chaincode) getByte(ctx CustomTransactionContextInterface, key string) ([]byte, error) {
 	AsByte, _ := ctx.GetStub().GetState(key)
 	if AsByte == nil {
-		return []byte{}, Errorf("No state with key %v", key)
+		return []byte{}, fmt.Errorf("No state with key %v", key)
 	}
 	return AsByte, nil
 }
 
 func (c *Chaincode) checkConsent(ctx CustomTransactionContextInterface, consentID, checkFor string) bool {
-	consentAsyte, err := c.getByte(ctx, consentID)
+	consentAsByte, err := c.getByte(ctx, consentID)
 	if err != nil {
 		return false
 	}
 	var consent Consent
-	json.Unmarshal(consentAsyte, &consent)
+	err = json.Unmarshal(consentAsByte, &consent)
+	if err != nil {
+		return false
+	}
 
 	for k := range consent.PermanentConsenters {
 		if checkFor == k {
@@ -123,39 +133,64 @@ func (c *Chaincode) checkConsent(ctx CustomTransactionContextInterface, consentI
 }
 
 func (c *Chaincode) GetTest(ctx CustomTransactionContextInterface, key, requester string) (Test, error) {
-	existing := ctx.GetData()
+	existing, err := ctx.GetStub().GetState(key)
+	if err != nil {
+		return Test{}, fmt.Errorf("Failed to read from world state: %v", err)
+	}
 	if existing == nil {
-		return Test{}, Errorf("Test with ID %v does'nt exists", key)
+		return Test{}, fmt.Errorf("Test with ID %v doesn't exist", key)
 	}
 
 	var test Test
-	json.Unmarshal(existing, &test)
+	err = json.Unmarshal(existing, &test)
+	if err != nil {
+		return Test{}, fmt.Errorf("Failed to unmarshal test data: %v", err)
+	}
+
 	if ok := c.checkConsent(ctx, test.PatientID, requester); !ok && test.TypeOfT == 0 {
-		return Test{}, Errorf("Please get consent form the Patient")
+		return Test{}, fmt.Errorf("Please get consent from the patient")
 	}
 	return test, nil
 }
+
 func (c *Chaincode) GetReport(ctx CustomTransactionContextInterface, key, requester string) (Report, error) {
-	existing := ctx.GetData()
-	if existing == nil {
-		return Report{}, Errorf("Report with ID %v does'nt exists", key)
+	existing, err := ctx.GetStub().GetState(key)
+	if err != nil {
+		return Report{}, fmt.Errorf("Failed to read from world state: %v", err)
 	}
+	if existing == nil {
+		return Report{}, fmt.Errorf("Report with ID %v doesn't exist", key)
+	}
+
 	var report Report
-	json.Unmarshal(existing, &report)
+	err = json.Unmarshal(existing, &report)
+	if err != nil {
+		return Report{}, fmt.Errorf("Failed to unmarshal report data: %v", err)
+	}
+
 	if ok := c.checkConsent(ctx, report.PatientID, requester); !ok {
-		return Report{}, Errorf("Please get consent form the Patient")
+		return Report{}, fmt.Errorf("Please get consent from the patient")
 	}
 	return report, nil
 }
+
 func (c *Chaincode) GetTreatment(ctx CustomTransactionContextInterface, key, requester string) (Treatment, error) {
-	existing := ctx.GetData()
-	if existing == nil {
-		return Treatment{}, Errorf("Treatment with ID %v does'nt exists", key)
+	existing, err := ctx.GetStub().GetState(key)
+	if err != nil {
+		return Treatment{}, fmt.Errorf("Failed to read from world state: %v", err)
 	}
+	if existing == nil {
+		return Treatment{}, fmt.Errorf("Treatment with ID %v doesn't exist", key)
+	}
+
 	var treatment Treatment
-	json.Unmarshal(existing, &treatment)
+	err = json.Unmarshal(existing, &treatment)
+	if err != nil {
+		return Treatment{}, fmt.Errorf("Failed to unmarshal treatment data: %v", err)
+	}
+
 	if ok := c.checkConsent(ctx, treatment.PatientID, requester); !ok {
-		return Treatment{}, Errorf("Please get consent form the Patient")
+		return Treatment{}, fmt.Errorf("Please get consent from the patient")
 	}
 	return treatment, nil
 }
@@ -163,10 +198,13 @@ func (c *Chaincode) GetTreatment(ctx CustomTransactionContextInterface, key, req
 func (c *Chaincode) GetDrugs(ctx CustomTransactionContextInterface, key, requester string) (Drugs, error) {
 	existing := ctx.GetData()
 	if existing == nil {
-		return Drugs{}, Errorf("Treatment with ID %v does'nt exists", key)
+		return Drugs{}, Errorf("Drugs with ID %v does not exist", key)
 	}
 	var drugs Drugs
-	json.Unmarshal(existing, &drugs)
+	err := json.Unmarshal(existing, &drugs)
+	if err != nil {
+		return Drugs{}, Errorf("Error unmarshalling drugs data for ID %v: %v", key, err)
+	}
 	if ok := c.checkConsent(ctx, drugs.For, requester); !ok {
 		return Drugs{}, Errorf("Please get consent form the Patient")
 	}
