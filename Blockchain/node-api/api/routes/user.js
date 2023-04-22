@@ -23,7 +23,9 @@ routes.post("/register-user", async (req, res) => {
     const privateKeyRegex =
       /-----BEGIN PRIVATE KEY-----(.*)-----END PRIVATE KEY-----/s;
     const extractedPrivateKey = privateKey.match(privateKeyRegex)[1].trim();
-    res.status(200).json({ privatekey: extractedPrivateKey });
+    res
+      .status(200)
+      .json({ privatekey: extractedPrivateKey, clientId: response.client });
   }
 });
 
@@ -39,7 +41,11 @@ routes.post("/login", async (req, res) => {
     const privateKeyRegex =
       /-----BEGIN PRIVATE KEY-----(.*)-----END PRIVATE KEY-----/s;
     const extractedPrivateKey = privateKey.match(privateKeyRegex)[1].trim();
-    res.status(200).json({ privatekey: extractedPrivateKey });
+    if (extractedPrivateKey === req.body.privateKey) {
+      res.status(200).json({ message: "success", id: req.body.id });
+    } else {
+      res.status(500).json("Unauthorize!");
+    }
   } catch (err) {
     console.error(err);
   }
