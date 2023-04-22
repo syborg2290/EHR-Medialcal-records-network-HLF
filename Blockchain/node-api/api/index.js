@@ -8,7 +8,7 @@ const pharmacies = require("./routes/pharmacies");
 const general = require("./routes/general");
 const user = require("./routes/user");
 
-PORT = process.env.PORT || 3000;
+PORT = process.env.PORT || 4000;
 
 const app = express();
 const logger = (req, res, next) => {

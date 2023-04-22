@@ -2,13 +2,14 @@ const fabricCAService = require("fabric-ca-client");
 const { Wallets } = require("fabric-network");
 const yaml = require("js-yaml");
 const fs = require("fs");
-const clientName = "client";
+const { v4: uuidv4 } = require("uuid");
 const walletPath = "./wallet";
 // const ccp = yaml.safeLoad(fs.readFileSync('./connection.yaml'))
 // const  caConfig = ccp.certificateAuthorities[ccp.organizations.Peepaltree.certificateAuthorities[0]]
 
-export const registerUser = async () => {
+const registerUser = async (clientType) => {
   try {
+    const clientName = clientType + "-" + uuidv4();
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     const admin = await wallet.get("admin");
     if (!admin) {
@@ -41,6 +42,7 @@ export const registerUser = async () => {
       },
       mspId: "DevMSP",
       type: "X.509",
+      client: clientName,
     };
     await wallet.put(clientName, x509Identity);
     console.log(
@@ -49,7 +51,7 @@ export const registerUser = async () => {
     return x509Identity;
   } catch (error) {
     console.log(error);
-  } finally {
-    process.exit(1);
   }
 };
+
+module.exports = registerUser;

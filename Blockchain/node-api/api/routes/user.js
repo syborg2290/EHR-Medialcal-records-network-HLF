@@ -1,14 +1,47 @@
 const express = require("express");
-const { registerUser } = require("../../test-client/registerUser");
+const fs = require("fs");
+const registerUser = require("../../test-client/registerUser");
+const registerAdmin = require("../../test-client/enrollAdmin");
+const path = require("path");
 routes = express.Router();
 
-routes.get("/register", async (req, res) => {
-  const res = await registerUser();
-  if (!res) {
+routes.post("/register-admin", async (req, res) => {
+  const response = await registerAdmin();
+  if (!response) {
     res.status(500).json("Something went wrong!");
   } else {
-    const jsonRes = JSON.parse(res);
-    res.status(200).json(jsonRes);
+    res.status(200).send(response);
+  }
+});
+
+routes.post("/register-user", async (req, res) => {
+  const response = await registerUser(req.body.client);
+  if (!response) {
+    res.status(500).json("Something went wrong!");
+  } else {
+    const privateKey = response.credentials.privateKey;
+    const privateKeyRegex =
+      /-----BEGIN PRIVATE KEY-----(.*)-----END PRIVATE KEY-----/s;
+    const extractedPrivateKey = privateKey.match(privateKeyRegex)[1].trim();
+    res.status(200).json({ privatekey: extractedPrivateKey });
+  }
+});
+
+routes.post("/login", async (req, res) => {
+  try {
+    const data = fs.readFileSync(
+      path.join(__dirname, "../../wallet") + `/${req.body.id}.id`,
+      "utf-8"
+    );
+
+    const privateKey = JSON.parse(data)["credentials"]["privateKey"];
+
+    const privateKeyRegex =
+      /-----BEGIN PRIVATE KEY-----(.*)-----END PRIVATE KEY-----/s;
+    const extractedPrivateKey = privateKey.match(privateKeyRegex)[1].trim();
+    res.status(200).json({ privatekey: extractedPrivateKey });
+  } catch (err) {
+    console.error(err);
   }
 });
 
