@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { Space, Table, Tag, Modal, Spin } from "antd";
-import { newHospital } from "../../services/hospital";
+import React, { useEffect, useState } from "react";
+import swal from "sweetalert";
+import { Table, Tag, Modal, Spin } from "antd";
+import { getAllHospital, newHospital } from "../../services/hospital";
 
 const HospitalAdmin = () => {
+  const [hospitals, setHospitals] = useState([]);
   const [openHospitalModal, setOpenHospitalModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
@@ -10,6 +12,15 @@ const HospitalAdmin = () => {
   const [licenseNo, setLicenseNo] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
+
+  useEffect(() => {
+    getAllHospitals();
+  }, []);
+
+  const getAllHospitals = async () => {
+    const data = await getAllHospital();
+    setHospitals(data);
+  };
 
   const columns = [
     {
@@ -19,9 +30,24 @@ const HospitalAdmin = () => {
       render: (text) => <div>{text}</div>,
     },
     {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "License No",
+      dataIndex: "license_no",
+      key: "license_no",
+      render: (_, { license_no }) => (
+        <Tag color="green" key={license_no}>
+          {license_no}
+        </Tag>
+      ),
+    },
+    {
+      title: "Contact No",
+      dataIndex: "phone_number",
+      key: "phone_number",
     },
     {
       title: "Address",
@@ -29,73 +55,86 @@ const HospitalAdmin = () => {
       key: "address",
     },
     {
-      title: "Tags",
-      key: "tags",
-      dataIndex: "tags",
-      render: (_, { tags }) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? "geekblue" : "green";
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
+      title: "Created At",
+      dataIndex: "created_at",
+      key: "created_at",
+      render: (_, { created_at }) => (
+        <Tag
+          color="yellow"
+          className="text-sm font-bold text-black"
+          key={created_at}
+        >
+          {new Date(created_at).toDateString()}
+        </Tag>
       ),
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <div>Invite {record.name}</div>
-          <div>Delete</div>
-        </Space>
-      ),
-    },
-  ];
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      tags: ["nice", "developer"],
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-      tags: ["loser"],
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sydney No. 1 Lake Park",
-      tags: ["cool", "teacher"],
-    },
+    // {
+    //   title: "Tags",
+    //   key: "tags",
+    //   dataIndex: "tags",
+    //   render: (_, { tags }) => (
+    //     <>
+    //       {tags.map((tag) => {
+    //         let color = tag.length > 5 ? "geekblue" : "green";
+    //         if (tag === "loser") {
+    //           color = "volcano";
+    //         }
+    //         return (
+    //           <Tag color={color} key={tag}>
+    //             {tag.toUpperCase()}
+    //           </Tag>
+    //         );
+    //       })}
+    //     </>
+    //   ),
+    // },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_, record) => (
+    //     <Space size="middle">
+    //       <div>Invite {record.name}</div>
+    //       <div>Delete</div>
+    //     </Space>
+    //   ),
+    // },
   ];
 
   const submitHospital = async () => {
-    setIsLoading(true);
-    const res = await newHospital(name, email, licenseNo, phoneNumber, address);
-    if (res) {
-      setIsLoading(false);
-      setName("");
-      setEmail("");
-      setLicenseNo("");
-      setPhoneNumber("");
-      setAddress("");
-      setOpenHospitalModal(false);
+    if (
+      name !== "" &&
+      email !== "" &&
+      licenseNo !== "" &&
+      phoneNumber !== "" &&
+      address !== ""
+    ) {
+      setIsLoading(true);
+      const res = await newHospital(
+        name,
+        email,
+        licenseNo,
+        phoneNumber,
+        address
+      );
+      if (res) {
+        setIsLoading(false);
+        setName("");
+        setEmail("");
+        setLicenseNo("");
+        setPhoneNumber("");
+        setAddress("");
+        setOpenHospitalModal(false);
+      } else {
+        setIsLoading(false);
+      }
     } else {
-      setIsLoading(false);
+      swal({
+        text: "Please provide required data!",
+        icon: "error",
+        type: "error",
+        dangerMode: true,
+        title: "Validation Error",
+      });
     }
   };
 
@@ -269,7 +308,7 @@ const HospitalAdmin = () => {
           </button>
         </div>
         <div className="p-20">
-          <Table columns={columns} dataSource={data} />
+          <Table columns={columns} dataSource={hospitals} />
         </div>
       </div>
     </>

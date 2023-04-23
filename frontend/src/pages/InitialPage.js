@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import swal from "sweetalert";
 import { Modal } from "antd";
 // import { useNavigate } from "react-router-dom";
 import { authenticate } from "../services/user";
@@ -11,13 +12,23 @@ const InitialPage = () => {
 
   const loginSubmit = async (e) => {
     e.preventDefault();
-    const res = await authenticate(clientId, privatekey);
-    window.location.reload();
-    if (res === "admin") {
-      // navigate("/admin", { replace: true, state: { name: "Fake Title" }})
-      // navigate("/admin-home");
+    if (clientId !== "" && privatekey !== "") {
+      const res = await authenticate(clientId, privatekey);
+      window.location.reload();
+      if (res === "admin") {
+        // navigate("/admin", { replace: true, state: { name: "Fake Title" }})
+        // navigate("/admin-home");
+      } else {
+        // navigate("/home");
+      }
     } else {
-      // navigate("/home");
+      swal({
+        text: "Please provide required data!",
+        icon: "error",
+        type: "error",
+        dangerMode: true,
+        title: "Try again with proper credentials",
+      });
     }
   };
 

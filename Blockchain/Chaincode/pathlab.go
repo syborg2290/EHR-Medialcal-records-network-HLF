@@ -23,7 +23,7 @@ func (c *Chaincode) DoTest(ctx CustomTransactionContextInterface, testID, result
 	if test.Status == 1 {
 		return OutputResult{MediaFile: []string{}}, Errorf("test is already done")
 	}
-	test.UpdateTime = time.Now().Unix()
+	test.UpdateTime = time.Now().Format("20060102150405")
 	for i := 0; i < numberOfMfile; i++ {
 		test.MediaFileLocation = append(test.MediaFileLocation, getSafeRandomString(ctx.GetStub())+strconv.Itoa(i))
 	}
@@ -48,14 +48,15 @@ func (c *Chaincode) CreateLab(ctx CustomTransactionContextInterface, id string, 
 
 	// Create a new lab struct
 	lab := Laboratory{
+		DocTyp:      LABORATORY,
 		ID:          id,
 		Name:        name,
 		Email:       email,
 		LicenseNo:   licenseNo,
 		PhoneNumber: phoneNumber,
 		Address:     address,
-		CreatedAt:   time.Now().Unix(),
-		UpdatedAt:   time.Now().Unix(),
+		CreatedAt:   time.Now().Format("20060102150405"),
+		UpdatedAt:   time.Now().Format("20060102150405"),
 	}
 
 	// Convert the lab struct to JSON format
@@ -84,27 +85,37 @@ func (c *Chaincode) labExists(ctx CustomTransactionContextInterface, id string) 
 
 // getAllLabs returns all labs in the ledger
 func (s *Chaincode) GetAllLabs(ctx CustomTransactionContextInterface) ([]*Laboratory, error) {
-	labIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(LABORATORY, []string{})
+	// Create a new query string to get all LABORATORY documents
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s"}}`, LABORATORY)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get all labs: %v", err)
+		return nil, fmt.Errorf("failed to execute query: %v", err)
 	}
-	defer labIterator.Close()
+	defer queryResults.Close()
 
+	// Create a slice to hold the results
 	var labs []*Laboratory
-	for labIterator.HasNext() {
-		labResult, err := labIterator.Next()
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
 		if err != nil {
-			return nil, fmt.Errorf("failed to iterate over all labs: %v", err)
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
 		}
 
-		lab := new(Laboratory)
-		err = json.Unmarshal(labResult.GetValue(), lab)
+		// Deserialize the document into a Lab struct
+		var lab Laboratory
+		err = json.Unmarshal(queryResult.Value, &lab)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal lab data: %v", err)
+			return nil, fmt.Errorf("failed to deserialize lab: %v", err)
 		}
 
-		labs = append(labs, lab)
+		// Add the lab to the results slice
+		labs = append(labs, &lab)
 	}
 
 	return labs, nil
+
 }

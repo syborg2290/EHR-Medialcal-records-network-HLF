@@ -10,10 +10,8 @@ routes.post("/register", (req, res) => {
     ["RegisterPatient", req.body.patientID, req.body.consenter],
     (err, payload) => {
       if (err) {
-        console.log(err);
         res.status(500).json(err);
       } else {
-        console.log(payload);
         res.status(200).json({
           message: "successfully registered",
         });

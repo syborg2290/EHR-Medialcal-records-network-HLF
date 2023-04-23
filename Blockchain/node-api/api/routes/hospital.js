@@ -72,19 +72,14 @@ routes.post("/create-hospital", async (req, res) => {
 
 // getAllHospitals route
 routes.get("/hospitals", (req, res) => {
-  contract(
-    req.query.clientId,
-    "QUERY",
-    ["GetAllHospitals"],
-    (err, payload) => {
-      if (err) {
-        res.status(500).json(err);
-      } else {
-        const doctors = JSON.parse(payload);
-        res.status(200).json(doctors);
-      }
+  contract(req.query.clientId, "QUERY", ["GetAllHospitals"], (err, payload) => {
+    if (err) {
+      res.status(500).json(err);
+    } else {
+      const hospitals = JSON.parse(payload);
+      res.status(200).json(hospitals);
     }
-  );
+  });
 });
 
 module.exports = routes;

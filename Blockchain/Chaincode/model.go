@@ -15,6 +15,7 @@ const (
 )
 
 type Doctor struct {
+	DocTyp      string `json:"docTyp"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
@@ -22,41 +23,44 @@ type Doctor struct {
 	LicenseNo   string `json:"license_no"`
 	PhoneNumber string `json:"phone_number"`
 	Address     string `json:"address"`
-	CreatedAt   int64  `json:"created_at"`
-	UpdatedAt   int64  `json:"updated_at"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
 }
 
 type Hospital struct {
+	DocTyp      string `json:"docTyp"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	LicenseNo   string `json:"license_no"`
 	PhoneNumber string `json:"phone_number"`
 	Address     string `json:"address"`
-	CreatedAt   int64  `json:"created_at"`
-	UpdatedAt   int64  `json:"updated_at"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
 }
 
 type Pharmacy struct {
+	DocTyp      string `json:"docTyp"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	LicenseNo   string `json:"license_no"`
 	PhoneNumber string `json:"phone_number"`
 	Address     string `json:"address"`
-	CreatedAt   int64  `json:"created_at"`
-	UpdatedAt   int64  `json:"updated_at"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
 }
 
 type Laboratory struct {
+	DocTyp      string `json:"docTyp"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	LicenseNo   string `json:"license_no"`
 	PhoneNumber string `json:"phone_number"`
 	Address     string `json:"address"`
-	CreatedAt   int64  `json:"created_at"`
-	UpdatedAt   int64  `json:"updated_at"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
 }
 
 // Report of patient
@@ -70,8 +74,8 @@ type Report struct {
 	Status      string            `json:"status"`
 	RefDoctorID string            `json:"doctor_id"`
 	Comments    map[string]string `json:"comments"`
-	CreateTime  int64             `json:"create_time"`
-	UpdateTime  int64             `json:"updated_time"`
+	CreateTime  string            `json:"create_time"`
+	UpdateTime  string            `json:"updated_time"`
 }
 
 // Drugs model
@@ -84,8 +88,8 @@ type Drugs struct {
 	Drug       map[string]string `josn:"drug"`   // name of drug mapped to doses
 	Status     int               `json:"status"` // 0 - requested 1-  given
 	Pending    map[string]string // name of ignored drugs mapped to when will that be 	available
-	CreateTime int64             `json:"create_time"`
-	UpdateTime int64             `josn:"updated_time"`
+	CreateTime string            `json:"create_time"`
+	UpdateTime string            `josn:"updated_time"`
 }
 
 // Test model file
@@ -101,8 +105,8 @@ type Test struct {
 	Result            string   `json:"test_result"`
 	Status            int      `json:"status"`       // status of test 0 - not done 1 - done
 	TypeOfT           int      `json:"type_of_test"` // 0- normal 1-abnormal
-	CreateTime        int64    `json:"create_time"`
-	UpdateTime        int64    `josn:"updated_time"`
+	CreateTime        string   `json:"create_time"`
+	UpdateTime        string   `josn:"updated_time"`
 }
 
 // Treatment model
@@ -117,8 +121,8 @@ type Treatment struct {
 	MediaFileLocation []string          `josn:"media_file_location"`
 	Comments          map[string]string `json:"comments"`
 	Status            int               // 0 not done 1 started 2  done 3 failed
-	CreateTime        int64             `json:"create_time"`
-	UpdateTime        int64             `josn:"updated_time"`
+	CreateTime        string            `json:"create_time"`
+	UpdateTime        string            `josn:"updated_time"`
 }
 
 // Consent model file

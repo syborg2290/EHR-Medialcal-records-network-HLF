@@ -46,8 +46,8 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, nam
 		RefDoctor:         refDoctor,
 		Status:            0,
 		MediaFileLocation: []string{},
-		CreateTime:        time.Now().Unix(),
-		UpdateTime:        time.Now().Unix(),
+		CreateTime:        time.Now().Format("20060102150405"),
+		UpdateTime:        time.Now().Format("20060102150405"),
 		PatientID:         report.PatientID,
 	}
 	if typeoftest == 1 {
@@ -79,8 +79,8 @@ func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, reportID
 		Comments:          make(map[string]string),
 		Status:            0,
 		MediaFileLocation: []string{},
-		CreateTime:        time.Now().Unix(),
-		UpdateTime:        time.Now().Unix(),
+		CreateTime:        time.Now().Format("20060102150405"),
+		UpdateTime:        time.Now().Format("20060102150405"),
 		PatientID:         report.PatientID,
 	}
 	treatmentAsByte, _ := json.Marshal(treatment)
@@ -106,8 +106,8 @@ func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, report
 		Drug:       make(map[string]string),
 		Status:     0,
 		Pending:    make(map[string]string),
-		CreateTime: time.Now().Unix(),
-		UpdateTime: time.Now().Unix(),
+		CreateTime: time.Now().Format("20060102150405"),
+		UpdateTime: time.Now().Format("20060102150405"),
 	}
 	if len(drug) != len(doses) {
 		return "", Errorf("Error: Missmatch with length of drug and doses")
@@ -136,7 +136,7 @@ func (c *Chaincode) AddCommentsToReport(ctx CustomTransactionContextInterface, r
 	}
 	timeNow := time.Now().Unix()
 	stringTime := strconv.FormatInt(timeNow, 10)
-	report.UpdateTime = timeNow
+	report.UpdateTime = time.Now().Format("20060102150405")
 	report.Comments[stringTime] = comment
 	reportAsByte, _ := json.Marshal(report)
 
@@ -159,7 +159,7 @@ func (c *Chaincode) AddCommentsToTreatment(ctx CustomTransactionContextInterface
 	stringTime := strconv.FormatInt(timeNow, 10)
 	treatment.Comments[stringTime] = comment
 
-	treatment.UpdateTime = timeNow
+	treatment.UpdateTime = time.Now().Format("20060102150405")
 	treatmentAsByte, _ := json.Marshal(treatment)
 	return ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
@@ -177,7 +177,7 @@ func (c *Chaincode) AddMediaToTreatment(ctx CustomTransactionContextInterface, t
 		id := TREATMENT + "media" + getSafeRandomString(ctx.GetStub()) + strconv.Itoa(i)
 		treatment.MediaFileLocation = append(treatment.MediaFileLocation, id)
 	}
-	treatment.UpdateTime = time.Now().Unix()
+	treatment.UpdateTime = time.Now().Format("20060102150405")
 	treatmentAsByte, _ := json.Marshal(treatment)
 	return treatment.MediaFileLocation, ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
@@ -195,6 +195,7 @@ func (c *Chaincode) CreateDoctor(ctx CustomTransactionContextInterface, id strin
 
 	// Create a new doctor struct
 	doctor := Doctor{
+		DocTyp:      DOCTOR,
 		ID:          id,
 		Name:        name,
 		Email:       email,
@@ -202,8 +203,8 @@ func (c *Chaincode) CreateDoctor(ctx CustomTransactionContextInterface, id strin
 		LicenseNo:   licenseNo,
 		PhoneNumber: phoneNumber,
 		Address:     address,
-		CreatedAt:   time.Now().Unix(),
-		UpdatedAt:   time.Now().Unix(),
+		CreatedAt:   time.Now().Format("20060102150405"),
+		UpdatedAt:   time.Now().Format("20060102150405"),
 	}
 
 	// Convert the doctor struct to JSON format
@@ -232,27 +233,37 @@ func (c *Chaincode) doctorExists(ctx CustomTransactionContextInterface, id strin
 
 // getAllDoctors returns all doctors in the ledger
 func (s *Chaincode) GetAllDoctors(ctx CustomTransactionContextInterface) ([]*Doctor, error) {
-	doctorIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(DOCTOR, []string{})
+	// Create a new query string to get all DOCTOR documents
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s"}}`, DOCTOR)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get all doctors: %v", err)
+		return nil, fmt.Errorf("failed to execute query: %v", err)
 	}
-	defer doctorIterator.Close()
+	defer queryResults.Close()
 
+	// Create a slice to hold the results
 	var doctors []*Doctor
-	for doctorIterator.HasNext() {
-		doctorResult, err := doctorIterator.Next()
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
 		if err != nil {
-			return nil, fmt.Errorf("failed to iterate over all doctors: %v", err)
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
 		}
 
-		doctor := new(Doctor)
-		err = json.Unmarshal(doctorResult.GetValue(), doctor)
+		// Deserialize the document into a Doctor struct
+		var doctor Doctor
+		err = json.Unmarshal(queryResult.Value, &doctor)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal doctor data: %v", err)
+			return nil, fmt.Errorf("failed to deserialize doctor: %v", err)
 		}
 
-		doctors = append(doctors, doctor)
+		// Add the doctor to the results slice
+		doctors = append(doctors, &doctor)
 	}
 
 	return doctors, nil
+
 }
