@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	. "fmt"
 	"time"
 )
@@ -13,7 +14,7 @@ func (c *Chaincode) GiveDrugs(ctx CustomTransactionContextInterface, drugID stri
 	}
 	var drugs Drugs
 	json.Unmarshal(existing, &drugs)
-	if drugs.Status == 1{
+	if drugs.Status == 1 {
 		return Errorf("Drugs allready given")
 	}
 	// check whether this pharmacies stores have roles as pharmacies
@@ -22,4 +23,78 @@ func (c *Chaincode) GiveDrugs(ctx CustomTransactionContextInterface, drugID stri
 	drugAsByte, _ := json.Marshal(drugs)
 
 	return ctx.GetStub().PutState(drugs.ID, drugAsByte)
+}
+
+// Create a new pharmacy
+func (c *Chaincode) CreatePharmacy(ctx CustomTransactionContextInterface, id string, name string, email string, licenseNo string, phoneNumber string, address string) error {
+	// Check if the pharmacy with the given ID already exists
+	exists, err := c.pharamcyExists(ctx, id)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return fmt.Errorf("the pharmacy with ID %s already exists", id)
+	}
+
+	// Create a new pharmacy struct
+	pharmacy := Pharmacy{
+		ID:          id,
+		Name:        name,
+		Email:       email,
+		LicenseNo:   licenseNo,
+		PhoneNumber: phoneNumber,
+		Address:     address,
+		CreatedAt:   time.Now().Unix(),
+		UpdatedAt:   time.Now().Unix(),
+	}
+
+	// Convert the pharmacy struct to JSON format
+	pharmacyJSON, err := json.Marshal(pharmacy)
+	if err != nil {
+		return err
+	}
+
+	// Save the pharmacy to the world state
+	err = ctx.GetStub().PutState(id, pharmacyJSON)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// pharamcyExists returns true if the pharmacy with given ID exists in the ledger
+func (c *Chaincode) pharamcyExists(ctx CustomTransactionContextInterface, id string) (bool, error) {
+	pharmacyJSON, err := ctx.GetStub().GetState(id)
+	if err != nil {
+		return false, err
+	}
+	return pharmacyJSON != nil, nil
+}
+
+// getAllPharmacies returns all pharmacies in the ledger
+func (s *Chaincode) GetAllPharmacies(ctx CustomTransactionContextInterface) ([]*Pharmacy, error) {
+	pharmacyIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(PHARMACY, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all pharmacies: %v", err)
+	}
+	defer pharmacyIterator.Close()
+
+	var pharmacies []*Pharmacy
+	for pharmacyIterator.HasNext() {
+		pharmacyResult, err := pharmacyIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to iterate over all pharmacies: %v", err)
+		}
+
+		pharmacy := new(Pharmacy)
+		err = json.Unmarshal(pharmacyResult.GetValue(), pharmacy)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal pharmacies data: %v", err)
+		}
+
+		pharmacies = append(pharmacies, pharmacy)
+	}
+
+	return pharmacies, nil
 }

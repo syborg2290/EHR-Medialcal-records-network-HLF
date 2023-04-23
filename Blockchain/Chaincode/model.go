@@ -3,12 +3,15 @@ package main
 // DocTyp of blockchain data
 // used for doing rich query
 const (
-	REPORT    = "REPORT"
-	DRUGS     = "DRUGS"
-	TESTS     = "TESTS"
-	TREATMENT = "TREATMENT"
-	CONSENT   = "CONSENT"
-	DOCTOR    = "DOCTOR"
+	REPORT     = "REPORT"
+	DRUGS      = "DRUGS"
+	TESTS      = "TESTS"
+	TREATMENT  = "TREATMENT"
+	CONSENT    = "CONSENT"
+	DOCTOR     = "DOCTOR"
+	HOSPITAL   = "HOSPITAL"
+	PHARMACY   = "PHARMACY"
+	LABORATORY = "LABORATORY"
 )
 
 type Doctor struct {
@@ -16,6 +19,39 @@ type Doctor struct {
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	Specialty   string `json:"specialty"`
+	LicenseNo   string `json:"license_no"`
+	PhoneNumber string `json:"phone_number"`
+	Address     string `json:"address"`
+	CreatedAt   int64  `json:"created_at"`
+	UpdatedAt   int64  `json:"updated_at"`
+}
+
+type Hospital struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	LicenseNo   string `json:"license_no"`
+	PhoneNumber string `json:"phone_number"`
+	Address     string `json:"address"`
+	CreatedAt   int64  `json:"created_at"`
+	UpdatedAt   int64  `json:"updated_at"`
+}
+
+type Pharmacy struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	LicenseNo   string `json:"license_no"`
+	PhoneNumber string `json:"phone_number"`
+	Address     string `json:"address"`
+	CreatedAt   int64  `json:"created_at"`
+	UpdatedAt   int64  `json:"updated_at"`
+}
+
+type Laboratory struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
 	LicenseNo   string `json:"license_no"`
 	PhoneNumber string `json:"phone_number"`
 	Address     string `json:"address"`

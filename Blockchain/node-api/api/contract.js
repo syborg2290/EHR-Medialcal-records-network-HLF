@@ -7,20 +7,20 @@ const CONNECTION_PROFILE_PATH = path.resolve(
   __dirname,
   "../test-client/connection.yaml"
 );
-const WALLET_PATH = path.resolve(__dirname, "../test-client/wallet");
+const WALLET_PATH = path.resolve(__dirname, "../wallet");
 
-const IDENTITY_NAME = "client";
+// const IDENTITY_NAME = "client";
 const CHANNEL_NAME = "test";
 const CONTRACT_NAME = "health";
 
-const contract = async (type, inputs, callback) => {
+const contract = async (identify_name, type, inputs, callback) => {
   const gateway = new Gateway();
   try {
     const ccp = yaml.safeLoad(fs.readFileSync(CONNECTION_PROFILE_PATH));
     const wallet = await Wallets.newFileSystemWallet(WALLET_PATH);
     await gateway.connect(ccp, {
       wallet: wallet,
-      identity: IDENTITY_NAME,
+      identity: identify_name,
       discovery: { enabled: false, asLocalhost: true },
     });
     const network = await gateway.getNetwork(CHANNEL_NAME);

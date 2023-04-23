@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const patient = require("./routes/patient");
 const hospital = require("./routes/hospital");
@@ -11,6 +12,7 @@ const user = require("./routes/user");
 PORT = process.env.PORT || 4000;
 
 const app = express();
+app.use(cors());
 const logger = (req, res, next) => {
   console.log(`${req.protocol}://${req.get("host")}${req.originalUrl}`);
   next();
