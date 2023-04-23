@@ -5,6 +5,7 @@ const routes = express.Router();
 
 routes.post("/register", (req, res) => {
   contract(
+    req.body.clientId,
     "INVOKE",
     ["RegisterPatient", req.body.patientID, req.body.consenter],
     (err, payload) => {
@@ -22,7 +23,7 @@ routes.post("/register", (req, res) => {
 });
 
 routes.get("/all", (req, res) => {
-  contract("QUERY", ["GetAllConsents"], (err, payload) => {
+  contract(req.query.clientId, "QUERY", ["GetAllConsents"], (err, payload) => {
     if (err) {
       res.status(500).json(err);
     } else {
@@ -34,6 +35,7 @@ routes.get("/all", (req, res) => {
 
 routes.put("/giveconsent", (req, res) => {
   contract(
+    req.body.clientId,
     "INVOKE",
     [
       "UpdateTempConsent",
@@ -56,6 +58,7 @@ routes.put("/giveconsent", (req, res) => {
 
 routes.put("/permconsent", (req, res) => {
   contract(
+    req.body.clientId,
     "INVOKE",
     ["UpdatePermConsent", req.body.aadhaar, req.body.type, req.body.to],
     (err, payload) => {
@@ -72,6 +75,7 @@ routes.put("/permconsent", (req, res) => {
 
 routes.put("/giveconsent", (req, res) => {
   contract(
+    req.body.clientId,
     "INVOKE",
     [
       "UpdateTempConsent",
@@ -93,7 +97,7 @@ routes.put("/giveconsent", (req, res) => {
 });
 
 routes.get("/test", (req, res) => {
-  contract("QUERY", ["GetTest"], (err, payload) => {
+  contract(req.query.clientId, "QUERY", ["GetTest"], (err, payload) => {
     if (err) {
       res.status(500).json(err);
     } else {
@@ -104,7 +108,7 @@ routes.get("/test", (req, res) => {
 });
 
 routes.get("/report", (req, res) => {
-  contract("QUERY", ["GetReport"], (err, payload) => {
+  contract(req.query.clientId, "QUERY", ["GetReport"], (err, payload) => {
     if (err) {
       res.status(500).json(err);
     } else {
@@ -115,7 +119,7 @@ routes.get("/report", (req, res) => {
 });
 
 routes.get("/treatment", (req, res) => {
-  contract("QUERY", ["GetTreatment"], (err, payload) => {
+  contract(req.query.clientId, "QUERY", ["GetTreatment"], (err, payload) => {
     if (err) {
       res.status(500).json(err);
     } else {
@@ -126,7 +130,7 @@ routes.get("/treatment", (req, res) => {
 });
 
 routes.get("/drugs", (req, res) => {
-  contract("QUERY", ["GetDrugs"], (err, payload) => {
+  contract(req.query.clientId, "QUERY", ["GetDrugs"], (err, payload) => {
     if (err) {
       res.status(500).json(err);
     } else {

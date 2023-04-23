@@ -1,19 +1,73 @@
-const express = require('express')
-const {contract} = require('../contract')
-routes = express.Router()
+const express = require("express");
+const { v4: uuidv4 } = require("uuid");
+const isAuthorize = require("../util/isAuthorizedAdmin");
+const { contract } = require("../contract");
+routes = express.Router();
 
-routes.put('/givedrugs',(req,res)=>{
-    console.log(req.body)
-    contract("INVOKE",["GiveDrugs",req.headers.drug_id],(err,payload)=>{
-        if (err){
-            res.status(500).json(err)
-        }
-        else{
-            res.status(200).json({
-                "message":"DONE"
-            })
-        }
-    })
-})
+routes.put("/givedrugs", (req, res) => {
+  contract(
+    req.body.clientId,
+    "INVOKE",
+    ["GiveDrugs", req.headers.drug_id],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        res.status(200).json({
+          message: "DONE",
+        });
+      }
+    }
+  );
+});
 
-module.exports = routes
+// createPharamcy route
+routes.post("/lab", async (req, res) => {
+  const isAuthorizedToAccess = await isAuthorize(req.headers.authorization);
+  if (isAuthorizedToAccess) {
+    contract(
+      req.body.clientId,
+      "INVOKE",
+      [
+        "CreatePharmacy",
+        uuidv4(),
+        req.body.name,
+        req.body.email,
+        req.body.licenseNo,
+        req.body.phoneNumber,
+        req.body.address,
+      ],
+      (err, payload) => {
+        if (err) {
+          res.status(500).json(err);
+        } else {
+          res.status(200).json({
+            message: `Successfully created pharmacy ${req.body.name}`,
+            data: payload,
+          });
+        }
+      }
+    );
+  } else {
+    res.status(500).json({ message: "unauthorized!" });
+  }
+});
+
+// getAllHospitals route
+routes.get("/labs", (req, res) => {
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetAllPharmacies"],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const doctors = JSON.parse(payload);
+        res.status(200).json(doctors);
+      }
+    }
+  );
+});
+
+module.exports = routes;

@@ -183,7 +183,7 @@ func (c *Chaincode) AddMediaToTreatment(ctx CustomTransactionContextInterface, t
 }
 
 // Create a new doctor
-func (c *Chaincode) createDoctor(ctx CustomTransactionContextInterface, id string, name string, email string, specialty string, licenseNo string, phoneNumber string, address string) error {
+func (c *Chaincode) CreateDoctor(ctx CustomTransactionContextInterface, id string, name string, email string, specialty string, licenseNo string, phoneNumber string, address string) error {
 	// Check if the doctor with the given ID already exists
 	exists, err := c.doctorExists(ctx, id)
 	if err != nil {
@@ -231,7 +231,7 @@ func (c *Chaincode) doctorExists(ctx CustomTransactionContextInterface, id strin
 }
 
 // getAllDoctors returns all doctors in the ledger
-func (s *Chaincode) getAllDoctors(ctx CustomTransactionContextInterface) ([]*Doctor, error) {
+func (s *Chaincode) GetAllDoctors(ctx CustomTransactionContextInterface) ([]*Doctor, error) {
 	doctorIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(DOCTOR, []string{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all doctors: %v", err)

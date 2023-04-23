@@ -1,8 +1,25 @@
 import React, { useState } from "react";
 import { Modal } from "antd";
+// import { useNavigate } from "react-router-dom";
+import { authenticate } from "../services/user";
 
 const InitialPage = () => {
+  // const navigate = useNavigate();
   const [modalAuthOpen, setModalAuthOpen] = useState(false);
+  const [clientId, setClientId] = useState("");
+  const [privatekey, setPrivateKey] = useState("");
+
+  const loginSubmit = async (e) => {
+    e.preventDefault();
+    const res = await authenticate(clientId, privatekey);
+    window.location.reload();
+    if (res === "admin") {
+      // navigate("/admin", { replace: true, state: { name: "Fake Title" }})
+      // navigate("/admin-home");
+    } else {
+      // navigate("/home");
+    }
+  };
 
   return (
     <>
@@ -40,6 +57,9 @@ const InitialPage = () => {
                           name="clientId"
                           className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                           required
+                          onChange={(e) => {
+                            setClientId(e.target.value.trim());
+                          }}
                           aria-describedby="clientId-error"
                         />
                       </div>
@@ -58,12 +78,16 @@ const InitialPage = () => {
                           name="privatekey"
                           className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                           required
+                          onChange={(e) => {
+                            setPrivateKey(e.target.value.trim());
+                          }}
                           aria-describedby="privatekey-error"
                         />
                       </div>
                     </div>
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={loginSubmit}
                       className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                     >
                       Authenticate
