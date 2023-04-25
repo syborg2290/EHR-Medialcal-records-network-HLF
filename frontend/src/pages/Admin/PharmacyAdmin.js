@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { Table, Tag, Modal, Spin } from "antd";
-import { getAllHospital, newHospital } from "../../services/hospital";
+import { getAllPharmacies, newPharmacy } from "../../services/pharmacy";
 
-const HospitalAdmin = () => {
-  const [hospitals, setHospitals] = useState([]);
-  const [filteredHospitals, setFilteredHospitals] = useState([]);
-  const [openHospitalModal, setOpenHospitalModal] = useState(false);
+const PharmacyAdmin = () => {
+  const [Pharmacys, setPharmacys] = useState([]);
+  const [filteredPharmacys, setFilteredPharmacys] = useState([]);
+  const [openPharmacyModal, setOpenPharmacyModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setTableIsLoading] = useState(false);
   const [name, setName] = useState("");
@@ -16,14 +16,14 @@ const HospitalAdmin = () => {
   const [address, setAddress] = useState("");
 
   useEffect(() => {
-    getAllHospitals();
+    getAllPharmacysFunc();
     setTableIsLoading(false);
   }, []);
 
-  const getAllHospitals = async () => {
+  const getAllPharmacysFunc = async () => {
     setTableIsLoading(true);
-    const data = await getAllHospital();
-    setHospitals(data);
+    const data = await getAllPharmacies();
+    setPharmacys(data);
   };
 
   const columns = [
@@ -38,6 +38,7 @@ const HospitalAdmin = () => {
       dataIndex: "email",
       key: "email",
     },
+
     {
       title: "License No",
       dataIndex: "license_no",
@@ -104,7 +105,7 @@ const HospitalAdmin = () => {
     // },
   ];
 
-  const submitHospital = async () => {
+  const submitPharmacy = async () => {
     if (
       name !== "" &&
       email !== "" &&
@@ -113,7 +114,7 @@ const HospitalAdmin = () => {
       address !== ""
     ) {
       setIsLoading(true);
-      const res = await newHospital(
+      const res = await newPharmacy(
         name,
         email,
         licenseNo,
@@ -127,7 +128,7 @@ const HospitalAdmin = () => {
         setLicenseNo("");
         setPhoneNumber("");
         setAddress("");
-        setOpenHospitalModal(false);
+        setOpenPharmacyModal(false);
         window.location.reload();
       } else {
         setIsLoading(false);
@@ -143,14 +144,14 @@ const HospitalAdmin = () => {
     }
   };
 
-  const searchHospitals = (text) => {
-    let newArray = hospitals.filter((o) =>
+  const searchPharmacys = (text) => {
+    let newArray = Pharmacys.filter((o) =>
       Object.keys(o).some((k) =>
         o[k].toString().toLowerCase().includes(text.toLowerCase())
       )
     );
 
-    setFilteredHospitals(newArray);
+    setFilteredPharmacys(newArray);
   };
 
   return (
@@ -159,7 +160,7 @@ const HospitalAdmin = () => {
         style={{
           top: 20,
         }}
-        open={openHospitalModal}
+        open={openPharmacyModal}
         footer={null}
         closeIcon={<p></p>}
       >
@@ -168,7 +169,7 @@ const HospitalAdmin = () => {
             <div className="p-4 sm:p-7">
               <div className="text-center">
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
-                  Add new hospital to the network
+                  Add new pharmacy to the network
                 </h1>
               </div>
 
@@ -180,7 +181,7 @@ const HospitalAdmin = () => {
                         for="name"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter hospital name
+                        Enter name
                       </label>
                       <div className="relative">
                         <input
@@ -217,6 +218,7 @@ const HospitalAdmin = () => {
                         />
                       </div>
                     </div>
+
                     <div>
                       <label
                         for="licenseNo"
@@ -283,7 +285,7 @@ const HospitalAdmin = () => {
                     <button
                       type="button"
                       disabled={isLoading}
-                      onClick={submitHospital}
+                      onClick={submitPharmacy}
                       className={
                         !isLoading
                           ? "py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
@@ -296,7 +298,7 @@ const HospitalAdmin = () => {
 
                     <button
                       type="button"
-                      onClick={() => setOpenHospitalModal(false)}
+                      onClick={() => setOpenPharmacyModal(false)}
                       className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                     >
                       Cancel
@@ -314,11 +316,11 @@ const HospitalAdmin = () => {
         <div className="pt-20 pb-1 place-items-center place-content-center">
           <button
             onClick={() => {
-              setOpenHospitalModal(true);
+              setOpenPharmacyModal(true);
             }}
             className="group rounded-2xl h-12 w-48 bg-green-600 font-bold text-sm text-white relative overflow-hidden"
           >
-            Add New Hospital
+            Add New Pharmacy
             <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-2xl"></div>
           </button>
         </div>
@@ -330,9 +332,9 @@ const HospitalAdmin = () => {
             placeholder="Search"
             onChange={(e) => {
               if (e.target.value.trim() !== "") {
-                searchHospitals(e.target.value.trim());
+                searchPharmacys(e.target.value.trim());
               } else {
-                setFilteredHospitals([]);
+                setFilteredPharmacys([]);
               }
             }}
           />
@@ -341,7 +343,7 @@ const HospitalAdmin = () => {
           <Table
             columns={columns}
             dataSource={
-              filteredHospitals.length > 0 ? filteredHospitals : hospitals
+              filteredPharmacys.length > 0 ? filteredPharmacys : Pharmacys
             }
             loading={isTableLoading}
           />
@@ -351,4 +353,4 @@ const HospitalAdmin = () => {
   );
 };
 
-export default HospitalAdmin;
+export default PharmacyAdmin;

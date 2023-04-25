@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { Table, Tag, Modal, Spin } from "antd";
-import { getAllHospital, newHospital } from "../../services/hospital";
+import { getAllLab, newLab } from "../../services/lab";
 
-const HospitalAdmin = () => {
-  const [hospitals, setHospitals] = useState([]);
-  const [filteredHospitals, setFilteredHospitals] = useState([]);
-  const [openHospitalModal, setOpenHospitalModal] = useState(false);
+const LabAdmin = () => {
+  const [Labs, setLabs] = useState([]);
+  const [filteredLabs, setFilteredLabs] = useState([]);
+  const [openLabModal, setOpenLabModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setTableIsLoading] = useState(false);
   const [name, setName] = useState("");
@@ -16,14 +16,14 @@ const HospitalAdmin = () => {
   const [address, setAddress] = useState("");
 
   useEffect(() => {
-    getAllHospitals();
+    getAllLabsFunc();
     setTableIsLoading(false);
   }, []);
 
-  const getAllHospitals = async () => {
+  const getAllLabsFunc = async () => {
     setTableIsLoading(true);
-    const data = await getAllHospital();
-    setHospitals(data);
+    const data = await getAllLab();
+    setLabs(data);
   };
 
   const columns = [
@@ -38,6 +38,7 @@ const HospitalAdmin = () => {
       dataIndex: "email",
       key: "email",
     },
+
     {
       title: "License No",
       dataIndex: "license_no",
@@ -104,7 +105,7 @@ const HospitalAdmin = () => {
     // },
   ];
 
-  const submitHospital = async () => {
+  const submitLab = async () => {
     if (
       name !== "" &&
       email !== "" &&
@@ -113,13 +114,7 @@ const HospitalAdmin = () => {
       address !== ""
     ) {
       setIsLoading(true);
-      const res = await newHospital(
-        name,
-        email,
-        licenseNo,
-        phoneNumber,
-        address
-      );
+      const res = await newLab(name, email, licenseNo, phoneNumber, address);
       if (res) {
         setIsLoading(false);
         setName("");
@@ -127,7 +122,7 @@ const HospitalAdmin = () => {
         setLicenseNo("");
         setPhoneNumber("");
         setAddress("");
-        setOpenHospitalModal(false);
+        setOpenLabModal(false);
         window.location.reload();
       } else {
         setIsLoading(false);
@@ -143,14 +138,14 @@ const HospitalAdmin = () => {
     }
   };
 
-  const searchHospitals = (text) => {
-    let newArray = hospitals.filter((o) =>
+  const searchLabs = (text) => {
+    let newArray = Labs.filter((o) =>
       Object.keys(o).some((k) =>
         o[k].toString().toLowerCase().includes(text.toLowerCase())
       )
     );
 
-    setFilteredHospitals(newArray);
+    setFilteredLabs(newArray);
   };
 
   return (
@@ -159,7 +154,7 @@ const HospitalAdmin = () => {
         style={{
           top: 20,
         }}
-        open={openHospitalModal}
+        open={openLabModal}
         footer={null}
         closeIcon={<p></p>}
       >
@@ -168,7 +163,7 @@ const HospitalAdmin = () => {
             <div className="p-4 sm:p-7">
               <div className="text-center">
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
-                  Add new hospital to the network
+                  Add new Lab to the network
                 </h1>
               </div>
 
@@ -180,7 +175,7 @@ const HospitalAdmin = () => {
                         for="name"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter hospital name
+                        Enter name
                       </label>
                       <div className="relative">
                         <input
@@ -217,6 +212,7 @@ const HospitalAdmin = () => {
                         />
                       </div>
                     </div>
+
                     <div>
                       <label
                         for="licenseNo"
@@ -283,7 +279,7 @@ const HospitalAdmin = () => {
                     <button
                       type="button"
                       disabled={isLoading}
-                      onClick={submitHospital}
+                      onClick={submitLab}
                       className={
                         !isLoading
                           ? "py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
@@ -296,7 +292,7 @@ const HospitalAdmin = () => {
 
                     <button
                       type="button"
-                      onClick={() => setOpenHospitalModal(false)}
+                      onClick={() => setOpenLabModal(false)}
                       className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                     >
                       Cancel
@@ -314,11 +310,11 @@ const HospitalAdmin = () => {
         <div className="pt-20 pb-1 place-items-center place-content-center">
           <button
             onClick={() => {
-              setOpenHospitalModal(true);
+              setOpenLabModal(true);
             }}
             className="group rounded-2xl h-12 w-48 bg-green-600 font-bold text-sm text-white relative overflow-hidden"
           >
-            Add New Hospital
+            Add New Lab
             <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-2xl"></div>
           </button>
         </div>
@@ -330,9 +326,9 @@ const HospitalAdmin = () => {
             placeholder="Search"
             onChange={(e) => {
               if (e.target.value.trim() !== "") {
-                searchHospitals(e.target.value.trim());
+                searchLabs(e.target.value.trim());
               } else {
-                setFilteredHospitals([]);
+                setFilteredLabs([]);
               }
             }}
           />
@@ -340,9 +336,7 @@ const HospitalAdmin = () => {
         <div className="pl-10 pr-10 pb-10 pt-5">
           <Table
             columns={columns}
-            dataSource={
-              filteredHospitals.length > 0 ? filteredHospitals : hospitals
-            }
+            dataSource={filteredLabs.length > 0 ? filteredLabs : Labs}
             loading={isTableLoading}
           />
         </div>
@@ -351,4 +345,4 @@ const HospitalAdmin = () => {
   );
 };
 
-export default HospitalAdmin;
+export default LabAdmin;

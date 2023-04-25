@@ -5,6 +5,9 @@ import InitialPage from "./pages/InitialPage";
 import HomePage from "./pages/HomePage";
 import AdminHome from "./pages/AdminHome";
 import HospitalAdmin from "./pages/Admin/HospitalAdmin";
+import DoctorAdmin from "./pages/Admin/DoctorAdmin";
+import PharmacyAdmin from "./pages/Admin/PharmacyAdmin";
+import LabAdmin from "./pages/Admin/LabAdmin";
 
 function App() {
   const isUserAuthenticated = () => {
@@ -37,6 +40,24 @@ function App() {
         {isUserAuthenticated()?.type === "admin" &&
         isUserAuthenticated()?.id ? (
           <Route path="/admin-hospital" element={<HospitalAdmin />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+        {isUserAuthenticated()?.type === "admin" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/admin-doctor" element={<DoctorAdmin />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+        {isUserAuthenticated()?.type === "admin" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/admin-pharmacy" element={<PharmacyAdmin />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+        {isUserAuthenticated()?.type === "admin" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/admin-lab" element={<LabAdmin />} />
         ) : (
           <Route path="*" element={<Navigate to="/" />} />
         )}
