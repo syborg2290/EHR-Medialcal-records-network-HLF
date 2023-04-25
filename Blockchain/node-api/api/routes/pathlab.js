@@ -70,4 +70,18 @@ routes.get("/labs", (req, res) => {
   });
 });
 
+routes.get("/labs-count", (req, res) => {
+  contract(req.query.clientId, "QUERY", ["GetAllLabs"], (err, payload) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      if (payload) {
+        const hospitals = JSON.parse(payload);
+        res.status(200).json(hospitals.length);
+      }
+    }
+  });
+});
+
 module.exports = routes;

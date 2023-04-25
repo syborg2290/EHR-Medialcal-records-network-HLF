@@ -19,8 +19,8 @@ func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patie
 		Status:      "0",
 		RefDoctorID: refDoctor,
 		Comments:    make(map[string]string),
-		CreateTime:  time.Now().Format("20060102150405"),
-		UpdateTime:  time.Now().Format("20060102150405"),
+		CreateTime:  time.Now().Unix(),
+		UpdateTime:  time.Now().Unix(),
 	}
 	reportAsByte, _ := json.Marshal(report)
 	return report.ID, ctx.GetStub().PutState(id, reportAsByte)
@@ -37,7 +37,7 @@ func (c *Chaincode) StartTreatment(ctx CustomTransactionContextInterface, treatm
 	}
 	treatment.Supervisor = supervisor
 	treatment.Status = 1
-	treatment.UpdateTime = time.Now().Format("20060102150405")
+	treatment.UpdateTime = time.Now().Unix()
 
 	treatmentAsByte, _ := json.Marshal(treatment)
 
@@ -64,8 +64,8 @@ func (c *Chaincode) CreateHospital(ctx CustomTransactionContextInterface, id str
 		LicenseNo:   licenseNo,
 		PhoneNumber: phoneNumber,
 		Address:     address,
-		CreatedAt:   time.Now().Format("20060102150405"),
-		UpdatedAt:   time.Now().Format("20060102150405"),
+		CreatedAt:   time.Now().Unix(),
+		UpdatedAt:   time.Now().Unix(),
 	}
 
 	// Convert the hospital struct to JSON format

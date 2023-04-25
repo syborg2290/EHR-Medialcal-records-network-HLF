@@ -74,10 +74,23 @@ routes.post("/create-hospital", async (req, res) => {
 routes.get("/hospitals", (req, res) => {
   contract(req.query.clientId, "QUERY", ["GetAllHospitals"], (err, payload) => {
     if (err) {
+      console.log(err);
       res.status(500).json(err);
     } else {
       const hospitals = JSON.parse(payload);
       res.status(200).json(hospitals);
+    }
+  });
+});
+
+routes.get("/hospitals-count", (req, res) => {
+  contract(req.query.clientId, "QUERY", ["GetAllHospitals"], (err, payload) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      const hospitals = JSON.parse(payload);
+      res.status(200).json(hospitals.length);
     }
   });
 });

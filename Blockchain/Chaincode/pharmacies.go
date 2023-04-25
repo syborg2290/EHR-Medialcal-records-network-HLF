@@ -19,7 +19,7 @@ func (c *Chaincode) GiveDrugs(ctx CustomTransactionContextInterface, drugID stri
 	}
 	// check whether this pharmacies stores have roles as pharmacies
 	drugs.Status = 1
-	drugs.UpdateTime = time.Now().Format("20060102150405")
+	drugs.UpdateTime = time.Now().Unix()
 	drugAsByte, _ := json.Marshal(drugs)
 
 	return ctx.GetStub().PutState(drugs.ID, drugAsByte)
@@ -45,8 +45,8 @@ func (c *Chaincode) CreatePharmacy(ctx CustomTransactionContextInterface, id str
 		LicenseNo:   licenseNo,
 		PhoneNumber: phoneNumber,
 		Address:     address,
-		CreatedAt:   time.Now().Format("20060102150405"),
-		UpdatedAt:   time.Now().Format("20060102150405"),
+		CreatedAt:   time.Now().Unix(),
+		UpdatedAt:   time.Now().Unix(),
 	}
 
 	// Convert the pharmacy struct to JSON format

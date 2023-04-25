@@ -31,6 +31,18 @@ routes.get("/all", (req, res) => {
   });
 });
 
+routes.get("/patients-count", (req, res) => {
+  contract(req.query.clientId, "QUERY", ["GetAllConsents"], (err, payload) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      const hospitals = JSON.parse(payload);
+      res.status(200).json(hospitals.length);
+    }
+  });
+});
+
 routes.put("/giveconsent", (req, res) => {
   contract(
     req.body.clientId,

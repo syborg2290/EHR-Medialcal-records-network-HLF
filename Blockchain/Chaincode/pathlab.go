@@ -23,7 +23,7 @@ func (c *Chaincode) DoTest(ctx CustomTransactionContextInterface, testID, result
 	if test.Status == 1 {
 		return OutputResult{MediaFile: []string{}}, Errorf("test is already done")
 	}
-	test.UpdateTime = time.Now().Format("20060102150405")
+	test.UpdateTime = time.Now().Unix()
 	for i := 0; i < numberOfMfile; i++ {
 		test.MediaFileLocation = append(test.MediaFileLocation, getSafeRandomString(ctx.GetStub())+strconv.Itoa(i))
 	}
@@ -55,8 +55,8 @@ func (c *Chaincode) CreateLab(ctx CustomTransactionContextInterface, id string, 
 		LicenseNo:   licenseNo,
 		PhoneNumber: phoneNumber,
 		Address:     address,
-		CreatedAt:   time.Now().Format("20060102150405"),
-		UpdatedAt:   time.Now().Format("20060102150405"),
+		CreatedAt:   time.Now().Unix(),
+		UpdatedAt:   time.Now().Unix(),
 	}
 
 	// Convert the lab struct to JSON format

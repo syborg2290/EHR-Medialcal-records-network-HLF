@@ -46,8 +46,8 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, nam
 		RefDoctor:         refDoctor,
 		Status:            0,
 		MediaFileLocation: []string{},
-		CreateTime:        time.Now().Format("20060102150405"),
-		UpdateTime:        time.Now().Format("20060102150405"),
+		CreateTime:        time.Now().Unix(),
+		UpdateTime:        time.Now().Unix(),
 		PatientID:         report.PatientID,
 	}
 	if typeoftest == 1 {
@@ -79,8 +79,8 @@ func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, reportID
 		Comments:          make(map[string]string),
 		Status:            0,
 		MediaFileLocation: []string{},
-		CreateTime:        time.Now().Format("20060102150405"),
-		UpdateTime:        time.Now().Format("20060102150405"),
+		CreateTime:        time.Now().Unix(),
+		UpdateTime:        time.Now().Unix(),
 		PatientID:         report.PatientID,
 	}
 	treatmentAsByte, _ := json.Marshal(treatment)
@@ -106,8 +106,8 @@ func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, report
 		Drug:       make(map[string]string),
 		Status:     0,
 		Pending:    make(map[string]string),
-		CreateTime: time.Now().Format("20060102150405"),
-		UpdateTime: time.Now().Format("20060102150405"),
+		CreateTime: time.Now().Unix(),
+		UpdateTime: time.Now().Unix(),
 	}
 	if len(drug) != len(doses) {
 		return "", Errorf("Error: Missmatch with length of drug and doses")
@@ -136,7 +136,7 @@ func (c *Chaincode) AddCommentsToReport(ctx CustomTransactionContextInterface, r
 	}
 	timeNow := time.Now().Unix()
 	stringTime := strconv.FormatInt(timeNow, 10)
-	report.UpdateTime = time.Now().Format("20060102150405")
+	report.UpdateTime = time.Now().Unix()
 	report.Comments[stringTime] = comment
 	reportAsByte, _ := json.Marshal(report)
 
@@ -159,7 +159,7 @@ func (c *Chaincode) AddCommentsToTreatment(ctx CustomTransactionContextInterface
 	stringTime := strconv.FormatInt(timeNow, 10)
 	treatment.Comments[stringTime] = comment
 
-	treatment.UpdateTime = time.Now().Format("20060102150405")
+	treatment.UpdateTime = time.Now().Unix()
 	treatmentAsByte, _ := json.Marshal(treatment)
 	return ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
@@ -177,7 +177,7 @@ func (c *Chaincode) AddMediaToTreatment(ctx CustomTransactionContextInterface, t
 		id := TREATMENT + "media" + getSafeRandomString(ctx.GetStub()) + strconv.Itoa(i)
 		treatment.MediaFileLocation = append(treatment.MediaFileLocation, id)
 	}
-	treatment.UpdateTime = time.Now().Format("20060102150405")
+	treatment.UpdateTime = time.Now().Unix()
 	treatmentAsByte, _ := json.Marshal(treatment)
 	return treatment.MediaFileLocation, ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
@@ -203,8 +203,8 @@ func (c *Chaincode) CreateDoctor(ctx CustomTransactionContextInterface, id strin
 		LicenseNo:   licenseNo,
 		PhoneNumber: phoneNumber,
 		Address:     address,
-		CreatedAt:   time.Now().Format("20060102150405"),
-		UpdatedAt:   time.Now().Format("20060102150405"),
+		CreatedAt:   time.Now().Unix(),
+		UpdatedAt:   time.Now().Unix(),
 	}
 
 	// Convert the doctor struct to JSON format

@@ -178,4 +178,16 @@ routes.get("/doctors", (req, res) => {
   });
 });
 
+routes.get("/doctors-count", (req, res) => {
+  contract(req.query.clientId, "QUERY", ["GetAllDoctors"], (err, payload) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      const hospitals = JSON.parse(payload);
+      res.status(200).json(hospitals.length);
+    }
+  });
+});
+
 module.exports = routes;

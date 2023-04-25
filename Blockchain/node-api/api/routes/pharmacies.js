@@ -22,7 +22,7 @@ routes.put("/givedrugs", (req, res) => {
 });
 
 // createPharamcy route
-routes.post("/lab", async (req, res) => {
+routes.post("/pharmacy", async (req, res) => {
   const isAuthorizedToAccess = await isAuthorize(req.headers.authorization);
   if (isAuthorizedToAccess) {
     contract(
@@ -54,7 +54,7 @@ routes.post("/lab", async (req, res) => {
 });
 
 // getAllHospitals route
-routes.get("/labs", (req, res) => {
+routes.get("/phramacies", (req, res) => {
   contract(
     req.query.clientId,
     "QUERY",
@@ -65,6 +65,25 @@ routes.get("/labs", (req, res) => {
       } else {
         const doctors = JSON.parse(payload);
         res.status(200).json(doctors);
+      }
+    }
+  );
+});
+
+routes.get("/phramacies-count", (req, res) => {
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetAllPharmacies"],
+    (err, payload) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json(err);
+      } else {
+        if (payload) {
+          const hospitals = JSON.parse(payload);
+          res.status(200).json(hospitals.length);
+        }
       }
     }
   );
