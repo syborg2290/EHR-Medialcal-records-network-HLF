@@ -10,7 +10,7 @@ routes.put("/report/addcomment", (req, res) => {
     "INVOKE",
     [
       "AddCommentsToReport",
-      req.headers.report_id,
+      req.body.report_id,
       req.body.comment,
       req.body.ref_doctor,
     ],
@@ -19,7 +19,7 @@ routes.put("/report/addcomment", (req, res) => {
         res.status(500).json(err);
       } else {
         res.status(200).json({
-          message: `Successfuly added comment to report ${req.headers.report_id}`,
+          message: `Successfuly added comment to report ${req.body.report_id}`,
         });
       }
     }
@@ -32,7 +32,8 @@ routes.post("/report/reftest", (req, res) => {
     "INVOKE",
     [
       "RefTest",
-      req.headers.report_id,
+      req.body.report_id,
+      req.body.labID,
       req.body.name,
       req.body.ref_doctor,
       req.body.type_of_test,
@@ -53,7 +54,7 @@ routes.post("/report/reftreatment", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    ["RefTreatment", req.headers.report_id, req.body.ref_doctor, req.body.name],
+    ["RefTreatment", req.body.report_id, req.body.ref_doctor, req.body.name],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
@@ -73,7 +74,8 @@ routes.post("/report/presdrugs", (req, res) => {
     "INVOKE",
     [
       "PrescribeDrugs",
-      req.headers.report_id,
+      req.body.pharamacyID,
+      req.body.report_id,
       req.body.ref_doctor,
       req.body.drugs,
       req.body.doses,
@@ -97,7 +99,7 @@ routes.put("/treatment/addcomment", (req, res) => {
     "INVOKE",
     [
       "AddCommentsToTreatment",
-      req.headers.treatment_id,
+      req.body.treatment_id,
       req.body.supervisor,
       req.body.comment,
     ],
@@ -119,7 +121,7 @@ routes.put("/treatment/addmediafile", (req, res) => {
     "INVOKE",
     [
       "AddMediaToTreatment",
-      req.headers.treatment_id,
+      req.body.treatment_id,
       req.body.supervisor,
       req.body.no_of_mediafile,
     ],

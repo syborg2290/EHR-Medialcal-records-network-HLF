@@ -124,6 +124,7 @@ const InitialPage = () => {
           <div className="w-full max-w-lg px-15 py-20 mx-auto bg-white rounded-lg shadow-xl">
             <h3 className="font-bold text-2xl mb-10">
               Healthcare-Chain: Blockchain-Enabled Decentralized Trustworthy
+              Network
             </h3>
             <h1 className="text-lg opacity-50">
               Please Enter To The Healthcare Network

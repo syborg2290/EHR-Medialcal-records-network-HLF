@@ -23,7 +23,7 @@ type TestOutput struct {
 	Result []Test `json:"result"`
 }
 
-func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, name, refDoctor string, typeoftest int) (string, error) {
+func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, labID, name, refDoctor string, typeoftest int) (string, error) {
 	if ctx.GetData() == nil {
 		return "", Errorf("Report with ID %v doesn't exists", reportID)
 	}
@@ -41,6 +41,7 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, nam
 	test := Test{
 		DocTyp:            TESTS,
 		ReportID:          reportID,
+		LabID:             labID,
 		ID:                id,
 		Name:              name,
 		RefDoctor:         refDoctor,
@@ -87,7 +88,7 @@ func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, reportID
 	return treatment.ID, ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
 
-func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, reportID, refDoctor string, drug, doses []string) (string, error) {
+func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, pharamacyID, reportID, refDoctor string, drug, doses []string) (string, error) {
 	if ctx.GetData() == nil {
 		return "", Errorf("Report with ID %v doesn't exists", reportID)
 	}
@@ -99,15 +100,16 @@ func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, report
 	}
 	id := DRUGS + getSafeRandomString(ctx.GetStub())
 	drugs := Drugs{
-		DocTyp:     DRUGS,
-		ReportID:   reportID,
-		ID:         id,
-		RefDoctor:  refDoctor,
-		Drug:       make(map[string]string),
-		Status:     0,
-		Pending:    make(map[string]string),
-		CreateTime: time.Now().Unix(),
-		UpdateTime: time.Now().Unix(),
+		DocTyp:      DRUGS,
+		ReportID:    reportID,
+		PharamacyID: pharamacyID,
+		ID:          id,
+		RefDoctor:   refDoctor,
+		Drug:        make(map[string]string),
+		Status:      0,
+		Pending:     make(map[string]string),
+		CreateTime:  time.Now().Unix(),
+		UpdateTime:  time.Now().Unix(),
 	}
 	if len(drug) != len(doses) {
 		return "", Errorf("Error: Missmatch with length of drug and doses")

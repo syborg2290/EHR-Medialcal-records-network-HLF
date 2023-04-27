@@ -8,7 +8,7 @@ routes.put("/givedrugs", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    ["GiveDrugs", req.headers.drug_id],
+    ["GiveDrugs", req.body.drug_id],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);

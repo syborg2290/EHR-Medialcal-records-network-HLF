@@ -9,7 +9,12 @@ routes.post("/createreport", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    ["CreateNewReport", req.body.patient_id, req.body.ref_doctor],
+    [
+      "CreateNewReport",
+      req.body.patient_id,
+      req.body.hospitalID,
+      req.body.ref_doctor,
+    ],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
@@ -24,7 +29,7 @@ routes.put("/starttreatment", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    ["StartTreatment", req.headers.treatment_id, req.body.supervisor],
+    ["StartTreatment", req.body.treatment_id, req.body.supervisor],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);

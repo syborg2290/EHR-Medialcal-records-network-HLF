@@ -11,7 +11,7 @@ routes.put("/dotest", (req, res) => {
     "INVOKE",
     [
       "DoTest",
-      req.headers.test_id,
+      req.body.test_id,
       req.body.test_result,
       req.body.supervisor,
       req.body.no_of_mediafile,

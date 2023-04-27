@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patientID, refDoctor string) (string, error) {
+func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patientID, hospitalID, refDoctor string) (string, error) {
 	if ctx.GetData() == nil {
 		return "", Errorf("Patient of ID %v doesn't exists", patientID)
 	}
@@ -16,6 +16,7 @@ func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patie
 		DocTyp:      REPORT,
 		ID:          id,
 		PatientID:   patientID,
+		HospitalID:  hospitalID,
 		Status:      "0",
 		RefDoctorID: refDoctor,
 		Comments:    make(map[string]string),

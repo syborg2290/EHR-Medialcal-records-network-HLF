@@ -1,13 +1,22 @@
 const express = require("express");
 const { contract } = require("../contract");
 
+const { v4: uuidv4 } = require("uuid");
 const routes = express.Router();
 
 routes.post("/register", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    ["RegisterPatient", req.body.patientID, req.body.consenter],
+    [
+      "RegisterPatient",
+      uuidv4(),
+      req.body.fname,
+      req.body.lname,
+      req.body.boodType,
+      req.body.age,
+      req.body.consenter,
+    ],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
