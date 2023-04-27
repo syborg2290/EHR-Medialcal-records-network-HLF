@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import swal from "sweetalert";
 import { Modal } from "antd";
 // import { useNavigate } from "react-router-dom";
 import { authenticate } from "../services/user";
@@ -11,13 +12,23 @@ const InitialPage = () => {
 
   const loginSubmit = async (e) => {
     e.preventDefault();
-    const res = await authenticate(clientId, privatekey);
-    window.location.reload();
-    if (res === "admin") {
-      // navigate("/admin", { replace: true, state: { name: "Fake Title" }})
-      // navigate("/admin-home");
+    if (clientId !== "" && privatekey !== "") {
+      const res = await authenticate(clientId, privatekey);
+      window.location.reload();
+      if (res === "admin") {
+        // navigate("/admin", { replace: true, state: { name: "Fake Title" }})
+        // navigate("/admin-home");
+      } else {
+        // navigate("/home");
+      }
     } else {
-      // navigate("/home");
+      swal({
+        text: "Please provide required data!",
+        icon: "error",
+        type: "error",
+        dangerMode: true,
+        title: "Try again with proper credentials",
+      });
     }
   };
 
@@ -113,6 +124,7 @@ const InitialPage = () => {
           <div className="w-full max-w-lg px-15 py-20 mx-auto bg-white rounded-lg shadow-xl">
             <h3 className="font-bold text-2xl mb-10">
               Healthcare-Chain: Blockchain-Enabled Decentralized Trustworthy
+              Network
             </h3>
             <h1 className="text-lg opacity-50">
               Please Enter To The Healthcare Network

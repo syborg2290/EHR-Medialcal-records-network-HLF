@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patientID, refDoctor string) (string, error) {
+func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patientID, hospitalID, refDoctor string) (string, error) {
 	if ctx.GetData() == nil {
 		return "", Errorf("Patient of ID %v doesn't exists", patientID)
 	}
@@ -16,6 +16,7 @@ func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patie
 		DocTyp:      REPORT,
 		ID:          id,
 		PatientID:   patientID,
+		HospitalID:  hospitalID,
 		Status:      "0",
 		RefDoctorID: refDoctor,
 		Comments:    make(map[string]string),
@@ -57,6 +58,7 @@ func (c *Chaincode) CreateHospital(ctx CustomTransactionContextInterface, id str
 
 	// Create a new hospital struct
 	hospital := Hospital{
+		DocTyp:      HOSPITAL,
 		ID:          id,
 		Name:        name,
 		Email:       email,
@@ -93,26 +95,35 @@ func (c *Chaincode) hospitalExists(ctx CustomTransactionContextInterface, id str
 
 // getAllHospitals returns all hospitals in the ledger
 func (s *Chaincode) GetAllHospitals(ctx CustomTransactionContextInterface) ([]*Hospital, error) {
-	hospitalIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(HOSPITAL, []string{})
+	// Create a new query string to get all HOSPITAL documents
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s"}}`, HOSPITAL)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get all hospitals: %v", err)
+		return nil, fmt.Errorf("failed to execute query: %v", err)
 	}
-	defer hospitalIterator.Close()
+	defer queryResults.Close()
 
+	// Create a slice to hold the results
 	var hospitals []*Hospital
-	for hospitalIterator.HasNext() {
-		hospitalResult, err := hospitalIterator.Next()
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
 		if err != nil {
-			return nil, fmt.Errorf("failed to iterate over all hospitals: %v", err)
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
 		}
 
-		hospital := new(Hospital)
-		err = json.Unmarshal(hospitalResult.GetValue(), hospital)
+		// Deserialize the document into a Hospital struct
+		var hospital Hospital
+		err = json.Unmarshal(queryResult.Value, &hospital)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal hospital data: %v", err)
+			return nil, fmt.Errorf("failed to deserialize hospital: %v", err)
 		}
 
-		hospitals = append(hospitals, hospital)
+		// Add the hospital to the results slice
+		hospitals = append(hospitals, &hospital)
 	}
 
 	return hospitals, nil

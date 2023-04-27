@@ -9,7 +9,12 @@ routes.post("/createreport", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    ["CreateNewReport", req.body.patient_id, req.body.ref_doctor],
+    [
+      "CreateNewReport",
+      req.body.patient_id,
+      req.body.hospitalID,
+      req.body.ref_doctor,
+    ],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
@@ -24,7 +29,7 @@ routes.put("/starttreatment", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    ["StartTreatment", req.headers.treatment_id, req.body.supervisor],
+    ["StartTreatment", req.body.treatment_id, req.body.supervisor],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
@@ -72,19 +77,27 @@ routes.post("/create-hospital", async (req, res) => {
 
 // getAllHospitals route
 routes.get("/hospitals", (req, res) => {
-  contract(
-    req.query.clientId,
-    "QUERY",
-    ["GetAllHospitals"],
-    (err, payload) => {
-      if (err) {
-        res.status(500).json(err);
-      } else {
-        const doctors = JSON.parse(payload);
-        res.status(200).json(doctors);
-      }
+  contract(req.query.clientId, "QUERY", ["GetAllHospitals"], (err, payload) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      const hospitals = JSON.parse(payload);
+      res.status(200).json(hospitals);
     }
-  );
+  });
+});
+
+routes.get("/hospitals-count", (req, res) => {
+  contract(req.query.clientId, "QUERY", ["GetAllHospitals"], (err, payload) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      const hospitals = JSON.parse(payload);
+      res.status(200).json(hospitals.length);
+    }
+  });
 });
 
 module.exports = routes;

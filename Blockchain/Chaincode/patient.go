@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (c *Chaincode) RegisterPatient(ctx CustomTransactionContextInterface, patientID, permCon string) error {
+func (c *Chaincode) RegisterPatient(ctx CustomTransactionContextInterface, patientID, FirstName, LastName, BloodType, DOB, permCon string) error {
 	existing := ctx.GetData()
 
 	if existing != nil {
@@ -16,6 +16,10 @@ func (c *Chaincode) RegisterPatient(ctx CustomTransactionContextInterface, patie
 	consent := Consent{
 		DocTyp:              CONSENT,
 		ID:                  patientID,
+		FirstName:           FirstName,
+		LastName:            LastName,
+		BloodType:           BloodType,
+		DOB:                 DOB,
 		PermanentConsenters: make(map[string]bool),
 		TemporaryConsenters: make(map[string]int64),
 	}

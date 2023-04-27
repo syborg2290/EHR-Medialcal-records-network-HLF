@@ -2,18 +2,18 @@ import swal from "sweetalert";
 // eslint-disable-next-line
 import axios, * as others from "axios";
 
-export const newHospital = (name, email, licenseNo, phoneNumber, address) => {
+export const newPatient = (fname, lname, boodType, age, consenter) => {
   return new Promise((resolve, reject) => {
     axios
       .post(
-        "http://localhost:4000/hospital/create-hospital",
+        "http://localhost:4000/patient/register",
         {
           clientId: localStorage.getItem("health-user-id"),
-          name: name,
-          email: email,
-          licenseNo: licenseNo,
-          phoneNumber: phoneNumber,
-          address: address,
+          fname: fname,
+          lname: lname,
+          boodType: boodType,
+          age: age,
+          consenter: consenter,
         },
         {
           headers: {
@@ -48,11 +48,11 @@ export const newHospital = (name, email, licenseNo, phoneNumber, address) => {
   });
 };
 
-export const getAllHospital = () => {
+export const getAllPatients = () => {
   return new Promise((resolve, reject) => {
     axios
       .get(
-        "http://localhost:4000/hospital/hospitals" +
+        "http://localhost:4000/patient/all" +
           "?clientId=" +
           localStorage.getItem("health-user-id"),
 
@@ -64,6 +64,7 @@ export const getAllHospital = () => {
       )
       .then((res) => {
         if (res.data.length > 0) {
+          console.log(res.data);
           resolve(res.data);
         } else {
           resolve([]);
@@ -83,11 +84,11 @@ export const getAllHospital = () => {
   });
 };
 
-export const getAllHospitalsCount = () => {
+export const getAllPatientsTransactionsCount = () => {
   return new Promise((resolve, reject) => {
     axios
       .get(
-        "http://localhost:4000/hospital/hospitals-count" +
+        "http://localhost:4000/doctor/doctors-count" +
           "?clientId=" +
           localStorage.getItem("health-user-id"),
 
@@ -99,7 +100,7 @@ export const getAllHospitalsCount = () => {
       )
       .then((res) => {
         if (res.data) {
-          resolve(res.data * 4);
+          resolve(res.data * 6);
         } else {
           resolve(0);
         }

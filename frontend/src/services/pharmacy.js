@@ -2,11 +2,47 @@ import swal from "sweetalert";
 // eslint-disable-next-line
 import axios, * as others from "axios";
 
-export const newHospital = (name, email, licenseNo, phoneNumber, address) => {
+export const getAlPharamcyTransactionCount = () => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/pharmacy/phramacies-count" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data) {
+          resolve(res.data * 3);
+        } else {
+          resolve(0);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+
+export const newPharmacy = (name, email, licenseNo, phoneNumber, address) => {
   return new Promise((resolve, reject) => {
     axios
       .post(
-        "http://localhost:4000/hospital/create-hospital",
+        "http://localhost:4000/pharmacy/pharmacy",
         {
           clientId: localStorage.getItem("health-user-id"),
           name: name,
@@ -48,11 +84,11 @@ export const newHospital = (name, email, licenseNo, phoneNumber, address) => {
   });
 };
 
-export const getAllHospital = () => {
+export const getAllPharmacies = () => {
   return new Promise((resolve, reject) => {
     axios
       .get(
-        "http://localhost:4000/hospital/hospitals" +
+        "http://localhost:4000/pharmacy/phramacies" +
           "?clientId=" +
           localStorage.getItem("health-user-id"),
 
@@ -67,41 +103,6 @@ export const getAllHospital = () => {
           resolve(res.data);
         } else {
           resolve([]);
-        }
-      })
-      .catch((err) => {
-        if (err.response && err.response.data && err.response.data.message) {
-          swal({
-            text: err.response.data.message.toUpperCase(),
-            icon: "error",
-            type: "error",
-            dangerMode: true,
-            title: "Oops, try again!",
-          });
-        }
-      });
-  });
-};
-
-export const getAllHospitalsCount = () => {
-  return new Promise((resolve, reject) => {
-    axios
-      .get(
-        "http://localhost:4000/hospital/hospitals-count" +
-          "?clientId=" +
-          localStorage.getItem("health-user-id"),
-
-        {
-          headers: {
-            Authorization: localStorage.getItem("health-user-privatekey"),
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data) {
-          resolve(res.data * 4);
-        } else {
-          resolve(0);
         }
       })
       .catch((err) => {

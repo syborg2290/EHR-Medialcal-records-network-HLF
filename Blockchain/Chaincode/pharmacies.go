@@ -38,6 +38,7 @@ func (c *Chaincode) CreatePharmacy(ctx CustomTransactionContextInterface, id str
 
 	// Create a new pharmacy struct
 	pharmacy := Pharmacy{
+		DocTyp:      PHARMACY,
 		ID:          id,
 		Name:        name,
 		Email:       email,
@@ -74,26 +75,35 @@ func (c *Chaincode) pharamcyExists(ctx CustomTransactionContextInterface, id str
 
 // getAllPharmacies returns all pharmacies in the ledger
 func (s *Chaincode) GetAllPharmacies(ctx CustomTransactionContextInterface) ([]*Pharmacy, error) {
-	pharmacyIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(PHARMACY, []string{})
+	// Create a new query string to get all PHARMACY documents
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s"}}`, PHARMACY)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get all pharmacies: %v", err)
+		return nil, fmt.Errorf("failed to execute query: %v", err)
 	}
-	defer pharmacyIterator.Close()
+	defer queryResults.Close()
 
+	// Create a slice to hold the results
 	var pharmacies []*Pharmacy
-	for pharmacyIterator.HasNext() {
-		pharmacyResult, err := pharmacyIterator.Next()
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
 		if err != nil {
-			return nil, fmt.Errorf("failed to iterate over all pharmacies: %v", err)
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
 		}
 
-		pharmacy := new(Pharmacy)
-		err = json.Unmarshal(pharmacyResult.GetValue(), pharmacy)
+		// Deserialize the document into a Lab struct
+		var pharmacy Pharmacy
+		err = json.Unmarshal(queryResult.Value, &pharmacy)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal pharmacies data: %v", err)
+			return nil, fmt.Errorf("failed to deserialize pharmacy: %v", err)
 		}
 
-		pharmacies = append(pharmacies, pharmacy)
+		// Add the pharmacy to the results slice
+		pharmacies = append(pharmacies, &pharmacy)
 	}
 
 	return pharmacies, nil

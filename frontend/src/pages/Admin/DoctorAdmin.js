@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { Table, Tag, Modal, Spin } from "antd";
-import { getAllHospital, newHospital } from "../../services/hospital";
+import { getAllDoctors, newDoctor } from "../../services/doctor";
 
-const HospitalAdmin = () => {
-  const [hospitals, setHospitals] = useState([]);
-  const [filteredHospitals, setFilteredHospitals] = useState([]);
-  const [openHospitalModal, setOpenHospitalModal] = useState(false);
+const DoctorAdmin = () => {
+  const [doctors, setDoctors] = useState([]);
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const [openDoctorModal, setOpenDoctorModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setTableIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [specialty, setSpecialty] = useState("");
   const [licenseNo, setLicenseNo] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
 
   useEffect(() => {
-    getAllHospitals();
+    getAllDoctorsFunc();
     setTableIsLoading(false);
   }, []);
 
-  const getAllHospitals = async () => {
+  const getAllDoctorsFunc = async () => {
     setTableIsLoading(true);
-    const data = await getAllHospital();
-    setHospitals(data);
+    const data = await getAllDoctors();
+    setDoctors(data);
   };
 
   const columns = [
@@ -37,6 +38,17 @@ const HospitalAdmin = () => {
       title: "Email",
       dataIndex: "email",
       key: "email",
+    },
+
+    {
+      title: "specialty",
+      dataIndex: "specialty",
+      key: "specialty",
+      render: (_, { specialty }) => (
+        <Tag color="orange" key={specialty}>
+          {specialty}
+        </Tag>
+      ),
     },
     {
       title: "License No",
@@ -104,19 +116,21 @@ const HospitalAdmin = () => {
     // },
   ];
 
-  const submitHospital = async () => {
+  const submitDoctor = async () => {
     if (
       name !== "" &&
       email !== "" &&
+      specialty !== "" &&
       licenseNo !== "" &&
       phoneNumber !== "" &&
       address !== ""
     ) {
       setIsLoading(true);
-      const res = await newHospital(
+      const res = await newDoctor(
         name,
         email,
         licenseNo,
+        specialty,
         phoneNumber,
         address
       );
@@ -125,9 +139,10 @@ const HospitalAdmin = () => {
         setName("");
         setEmail("");
         setLicenseNo("");
+        setSpecialty("");
         setPhoneNumber("");
         setAddress("");
-        setOpenHospitalModal(false);
+        setOpenDoctorModal(false);
         window.location.reload();
       } else {
         setIsLoading(false);
@@ -143,14 +158,14 @@ const HospitalAdmin = () => {
     }
   };
 
-  const searchHospitals = (text) => {
-    let newArray = hospitals.filter((o) =>
+  const searchDoctors = (text) => {
+    let newArray = doctors.filter((o) =>
       Object.keys(o).some((k) =>
         o[k].toString().toLowerCase().includes(text.toLowerCase())
       )
     );
 
-    setFilteredHospitals(newArray);
+    setFilteredDoctors(newArray);
   };
 
   return (
@@ -159,7 +174,7 @@ const HospitalAdmin = () => {
         style={{
           top: 20,
         }}
-        open={openHospitalModal}
+        open={openDoctorModal}
         footer={null}
         closeIcon={<p></p>}
       >
@@ -168,7 +183,7 @@ const HospitalAdmin = () => {
             <div className="p-4 sm:p-7">
               <div className="text-center">
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
-                  Add new hospital to the network
+                  Add new doctor to the network
                 </h1>
               </div>
 
@@ -180,7 +195,7 @@ const HospitalAdmin = () => {
                         for="name"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter hospital name
+                        Enter doctor's name
                       </label>
                       <div className="relative">
                         <input
@@ -214,6 +229,27 @@ const HospitalAdmin = () => {
                             setEmail(e.target.value.trim());
                           }}
                           aria-describedby="email-error"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label
+                        for="specialty"
+                        className="block text-sm font-bold ml-1 mb-2 dark:text-white"
+                      >
+                        Enter specialty
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="specialty"
+                          name="specialty"
+                          className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
+                          required
+                          onChange={(e) => {
+                            setSpecialty(e.target.value.trim());
+                          }}
+                          aria-describedby="specialty-error"
                         />
                       </div>
                     </div>
@@ -283,7 +319,7 @@ const HospitalAdmin = () => {
                     <button
                       type="button"
                       disabled={isLoading}
-                      onClick={submitHospital}
+                      onClick={submitDoctor}
                       className={
                         !isLoading
                           ? "py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
@@ -296,7 +332,7 @@ const HospitalAdmin = () => {
 
                     <button
                       type="button"
-                      onClick={() => setOpenHospitalModal(false)}
+                      onClick={() => setOpenDoctorModal(false)}
                       className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                     >
                       Cancel
@@ -314,11 +350,11 @@ const HospitalAdmin = () => {
         <div className="pt-20 pb-1 place-items-center place-content-center">
           <button
             onClick={() => {
-              setOpenHospitalModal(true);
+              setOpenDoctorModal(true);
             }}
             className="group rounded-2xl h-12 w-48 bg-green-600 font-bold text-sm text-white relative overflow-hidden"
           >
-            Add New Hospital
+            Add New Doctor
             <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-2xl"></div>
           </button>
         </div>
@@ -330,9 +366,9 @@ const HospitalAdmin = () => {
             placeholder="Search"
             onChange={(e) => {
               if (e.target.value.trim() !== "") {
-                searchHospitals(e.target.value.trim());
+                searchDoctors(e.target.value.trim());
               } else {
-                setFilteredHospitals([]);
+                setFilteredDoctors([]);
               }
             }}
           />
@@ -340,9 +376,7 @@ const HospitalAdmin = () => {
         <div className="pl-10 pr-10 pb-10 pt-5">
           <Table
             columns={columns}
-            dataSource={
-              filteredHospitals.length > 0 ? filteredHospitals : hospitals
-            }
+            dataSource={filteredDoctors.length > 0 ? filteredDoctors : doctors}
             loading={isTableLoading}
           />
         </div>
@@ -351,4 +385,4 @@ const HospitalAdmin = () => {
   );
 };
 
-export default HospitalAdmin;
+export default DoctorAdmin;

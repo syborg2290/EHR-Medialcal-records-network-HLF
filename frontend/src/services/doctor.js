@@ -2,15 +2,23 @@ import swal from "sweetalert";
 // eslint-disable-next-line
 import axios, * as others from "axios";
 
-export const newHospital = (name, email, licenseNo, phoneNumber, address) => {
+export const newDoctor = (
+  name,
+  email,
+  licenseNo,
+  specialty,
+  phoneNumber,
+  address
+) => {
   return new Promise((resolve, reject) => {
     axios
       .post(
-        "http://localhost:4000/hospital/create-hospital",
+        "http://localhost:4000/doctor/doctor",
         {
           clientId: localStorage.getItem("health-user-id"),
           name: name,
           email: email,
+          specialty: specialty,
           licenseNo: licenseNo,
           phoneNumber: phoneNumber,
           address: address,
@@ -48,11 +56,11 @@ export const newHospital = (name, email, licenseNo, phoneNumber, address) => {
   });
 };
 
-export const getAllHospital = () => {
+export const getAllDoctors = () => {
   return new Promise((resolve, reject) => {
     axios
       .get(
-        "http://localhost:4000/hospital/hospitals" +
+        "http://localhost:4000/doctor/doctors" +
           "?clientId=" +
           localStorage.getItem("health-user-id"),
 
@@ -83,11 +91,11 @@ export const getAllHospital = () => {
   });
 };
 
-export const getAllHospitalsCount = () => {
+export const getAllDoctorsTransactionsCount = () => {
   return new Promise((resolve, reject) => {
     axios
       .get(
-        "http://localhost:4000/hospital/hospitals-count" +
+        "http://localhost:4000/doctor/doctors-count" +
           "?clientId=" +
           localStorage.getItem("health-user-id"),
 
@@ -99,7 +107,7 @@ export const getAllHospitalsCount = () => {
       )
       .then((res) => {
         if (res.data) {
-          resolve(res.data * 4);
+          resolve(res.data * 6);
         } else {
           resolve(0);
         }

@@ -11,7 +11,7 @@ routes.put("/dotest", (req, res) => {
     "INVOKE",
     [
       "DoTest",
-      req.headers.test_id,
+      req.body.test_id,
       req.body.test_result,
       req.body.supervisor,
       req.body.no_of_mediafile,
@@ -66,6 +66,20 @@ routes.get("/labs", (req, res) => {
     } else {
       const doctors = JSON.parse(payload);
       res.status(200).json(doctors);
+    }
+  });
+});
+
+routes.get("/labs-count", (req, res) => {
+  contract(req.query.clientId, "QUERY", ["GetAllLabs"], (err, payload) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      if (payload) {
+        const hospitals = JSON.parse(payload);
+        res.status(200).json(hospitals.length);
+      }
     }
   });
 });

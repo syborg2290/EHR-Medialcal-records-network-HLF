@@ -5,6 +5,15 @@ import InitialPage from "./pages/InitialPage";
 import HomePage from "./pages/HomePage";
 import AdminHome from "./pages/AdminHome";
 import HospitalAdmin from "./pages/Admin/HospitalAdmin";
+import DoctorAdmin from "./pages/Admin/DoctorAdmin";
+import PharmacyAdmin from "./pages/Admin/PharmacyAdmin";
+import LabAdmin from "./pages/Admin/LabAdmin";
+import PatientHome from "./pages/Patient/PatientHome";
+import PatientAdmin from "./pages/Admin/PatientAdmin";
+import PatientTreatments from "./pages/Patient/PatientTreatments";
+import PatientTests from "./pages/Patient/PatientTests";
+import PatientDrugs from "./pages/Patient/PatientDrugs";
+import PatientReports from "./pages/Patient/PatientReports";
 
 function App() {
   const isUserAuthenticated = () => {
@@ -40,6 +49,64 @@ function App() {
         ) : (
           <Route path="*" element={<Navigate to="/" />} />
         )}
+        {isUserAuthenticated()?.type === "admin" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/admin-doctor" element={<DoctorAdmin />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+        {isUserAuthenticated()?.type === "admin" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/admin-pharmacy" element={<PharmacyAdmin />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+        {isUserAuthenticated()?.type === "admin" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/admin-lab" element={<LabAdmin />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+
+        {isUserAuthenticated()?.type === "admin" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/admin-patient" element={<PatientAdmin />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+
+        {isUserAuthenticated()?.type === "client" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/patient-home" element={<PatientHome />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+
+        {isUserAuthenticated()?.type === "client" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/patient-treatments" element={<PatientTreatments />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+        {isUserAuthenticated()?.type === "client" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/patient-tests" element={<PatientTests />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+        {isUserAuthenticated()?.type === "client" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/patient-drugs" element={<PatientDrugs />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+        {isUserAuthenticated()?.type === "client" &&
+        isUserAuthenticated()?.id ? (
+          <Route path="/patient-reports" element={<PatientReports />} />
+        ) : (
+          <Route path="*" element={<Navigate to="/" />} />
+        )}
+
         {/* Client Home */}
         {isUserAuthenticated()?.type === "client" &&
         isUserAuthenticated()?.id ? (

@@ -25,7 +25,7 @@ app.use("/patient", patient);
 app.use("/hospital", hospital);
 app.use("/doctor", doctor);
 app.use("/pathlab", pathlab);
-app.use("/pharmacies", pharmacies);
+app.use("/pharmacy", pharmacies);
 app.use("/user", user);
 app.use("/", general);
 

@@ -15,6 +15,7 @@ const (
 )
 
 type Doctor struct {
+	DocTyp      string `json:"docTyp"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
@@ -27,6 +28,7 @@ type Doctor struct {
 }
 
 type Hospital struct {
+	DocTyp      string `json:"docTyp"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
@@ -38,6 +40,7 @@ type Hospital struct {
 }
 
 type Pharmacy struct {
+	DocTyp      string `json:"docTyp"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
@@ -49,6 +52,7 @@ type Pharmacy struct {
 }
 
 type Laboratory struct {
+	DocTyp      string `json:"docTyp"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
@@ -61,9 +65,10 @@ type Laboratory struct {
 
 // Report of patient
 type Report struct {
-	DocTyp    string `json:"docTyp"`
-	ID        string `json:"report_id"`
-	PatientID string `json:"patient_id"`
+	DocTyp     string `json:"docTyp"`
+	ID         string `json:"report_id"`
+	PatientID  string `json:"patient_id"`
+	HospitalID string `json:"hospital_id"`
 	// DrugsID []string `json:"drugs_id"`      			///
 	// TreatmentID []string `json:"treatment_id"`		/// these will be stored
 	// TestID []string `json:"test_id"`					///
@@ -76,16 +81,17 @@ type Report struct {
 
 // Drugs model
 type Drugs struct {
-	DocTyp     string            `json:"docTyp"`
-	ReportID   string            `json:"report_id"`
-	ID         string            `json:"drugs_id"`
-	For        string            `json:"patient__id"`
-	RefDoctor  string            `json:"ref_doctor"`
-	Drug       map[string]string `josn:"drug"`   // name of drug mapped to doses
-	Status     int               `json:"status"` // 0 - requested 1-  given
-	Pending    map[string]string // name of ignored drugs mapped to when will that be 	available
-	CreateTime int64             `json:"create_time"`
-	UpdateTime int64             `josn:"updated_time"`
+	DocTyp      string            `json:"docTyp"`
+	ReportID    string            `json:"report_id"`
+	PharamacyID string            `json:"pharmacy_id"`
+	ID          string            `json:"drugs_id"`
+	For         string            `json:"patient__id"`
+	RefDoctor   string            `json:"ref_doctor"`
+	Drug        map[string]string `josn:"drug"`   // name of drug mapped to doses
+	Status      int               `json:"status"` // 0 - requested 1-  given
+	Pending     map[string]string // name of ignored drugs mapped to when will that be 	available
+	CreateTime  int64             `json:"create_time"`
+	UpdateTime  int64             `josn:"updated_time"`
 }
 
 // Test model file
@@ -94,6 +100,7 @@ type Test struct {
 	ReportID          string   `json:"report_id"`
 	ID                string   `json:"test_id"`
 	PatientID         string   `json:"patient_id"`
+	LabID             string   `json:"lab_id"`
 	MediaFileLocation []string `json:"media_file_location"`
 	Name              string   `json:"test_name"`
 	Supervisor        string   `json:"supervisor_details"` // this will name of supervisor, aadress , path Lab
@@ -125,6 +132,10 @@ type Treatment struct {
 type Consent struct {
 	DocTyp              string           `json:"docTyp"`
 	ID                  string           `json:"patient__id"`
+	FirstName           string           `json:"patient__fname"`
+	LastName            string           `json:"patient__lname"`
+	BloodType           string           `json:"patient__bloodtype"`
+	DOB                 string           `json:"patient__dob"`
 	PermanentConsenters map[string]bool  `json:"parma_consenters"` // list of permanent consenter
 	TemporaryConsenters map[string]int64 `josn:"temp_consenters"`  // id of consenters mapped to expiry time unix
 	// 	Status              string           `json:"status"`           // defined status crises status

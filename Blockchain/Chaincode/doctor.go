@@ -23,7 +23,7 @@ type TestOutput struct {
 	Result []Test `json:"result"`
 }
 
-func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, name, refDoctor string, typeoftest int) (string, error) {
+func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, labID, name, refDoctor string, typeoftest int) (string, error) {
 	if ctx.GetData() == nil {
 		return "", Errorf("Report with ID %v doesn't exists", reportID)
 	}
@@ -41,6 +41,7 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, nam
 	test := Test{
 		DocTyp:            TESTS,
 		ReportID:          reportID,
+		LabID:             labID,
 		ID:                id,
 		Name:              name,
 		RefDoctor:         refDoctor,
@@ -87,7 +88,7 @@ func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, reportID
 	return treatment.ID, ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
 
-func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, reportID, refDoctor string, drug, doses []string) (string, error) {
+func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, pharamacyID, reportID, refDoctor string, drug, doses []string) (string, error) {
 	if ctx.GetData() == nil {
 		return "", Errorf("Report with ID %v doesn't exists", reportID)
 	}
@@ -99,15 +100,16 @@ func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, report
 	}
 	id := DRUGS + getSafeRandomString(ctx.GetStub())
 	drugs := Drugs{
-		DocTyp:     DRUGS,
-		ReportID:   reportID,
-		ID:         id,
-		RefDoctor:  refDoctor,
-		Drug:       make(map[string]string),
-		Status:     0,
-		Pending:    make(map[string]string),
-		CreateTime: time.Now().Unix(),
-		UpdateTime: time.Now().Unix(),
+		DocTyp:      DRUGS,
+		ReportID:    reportID,
+		PharamacyID: pharamacyID,
+		ID:          id,
+		RefDoctor:   refDoctor,
+		Drug:        make(map[string]string),
+		Status:      0,
+		Pending:     make(map[string]string),
+		CreateTime:  time.Now().Unix(),
+		UpdateTime:  time.Now().Unix(),
 	}
 	if len(drug) != len(doses) {
 		return "", Errorf("Error: Missmatch with length of drug and doses")
@@ -136,7 +138,7 @@ func (c *Chaincode) AddCommentsToReport(ctx CustomTransactionContextInterface, r
 	}
 	timeNow := time.Now().Unix()
 	stringTime := strconv.FormatInt(timeNow, 10)
-	report.UpdateTime = timeNow
+	report.UpdateTime = time.Now().Unix()
 	report.Comments[stringTime] = comment
 	reportAsByte, _ := json.Marshal(report)
 
@@ -159,7 +161,7 @@ func (c *Chaincode) AddCommentsToTreatment(ctx CustomTransactionContextInterface
 	stringTime := strconv.FormatInt(timeNow, 10)
 	treatment.Comments[stringTime] = comment
 
-	treatment.UpdateTime = timeNow
+	treatment.UpdateTime = time.Now().Unix()
 	treatmentAsByte, _ := json.Marshal(treatment)
 	return ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
@@ -195,6 +197,7 @@ func (c *Chaincode) CreateDoctor(ctx CustomTransactionContextInterface, id strin
 
 	// Create a new doctor struct
 	doctor := Doctor{
+		DocTyp:      DOCTOR,
 		ID:          id,
 		Name:        name,
 		Email:       email,
@@ -232,27 +235,37 @@ func (c *Chaincode) doctorExists(ctx CustomTransactionContextInterface, id strin
 
 // getAllDoctors returns all doctors in the ledger
 func (s *Chaincode) GetAllDoctors(ctx CustomTransactionContextInterface) ([]*Doctor, error) {
-	doctorIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(DOCTOR, []string{})
+	// Create a new query string to get all DOCTOR documents
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s"}}`, DOCTOR)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get all doctors: %v", err)
+		return nil, fmt.Errorf("failed to execute query: %v", err)
 	}
-	defer doctorIterator.Close()
+	defer queryResults.Close()
 
+	// Create a slice to hold the results
 	var doctors []*Doctor
-	for doctorIterator.HasNext() {
-		doctorResult, err := doctorIterator.Next()
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
 		if err != nil {
-			return nil, fmt.Errorf("failed to iterate over all doctors: %v", err)
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
 		}
 
-		doctor := new(Doctor)
-		err = json.Unmarshal(doctorResult.GetValue(), doctor)
+		// Deserialize the document into a Doctor struct
+		var doctor Doctor
+		err = json.Unmarshal(queryResult.Value, &doctor)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal doctor data: %v", err)
+			return nil, fmt.Errorf("failed to deserialize doctor: %v", err)
 		}
 
-		doctors = append(doctors, doctor)
+		// Add the doctor to the results slice
+		doctors = append(doctors, &doctor)
 	}
 
 	return doctors, nil
+
 }

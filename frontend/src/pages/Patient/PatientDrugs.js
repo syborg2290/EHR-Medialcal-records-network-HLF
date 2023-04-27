@@ -1,133 +1,76 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { Table, Tag, Modal, Spin } from "antd";
-import { getAllHospital, newHospital } from "../../services/hospital";
+import { getAllPatients, newPatient } from "../../services/patient";
 
-const HospitalAdmin = () => {
-  const [hospitals, setHospitals] = useState([]);
-  const [filteredHospitals, setFilteredHospitals] = useState([]);
-  const [openHospitalModal, setOpenHospitalModal] = useState(false);
+const PatientDrugs = () => {
+  const [Patients, setPatients] = useState([]);
+  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [openPatientModal, setOpenPatientModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setTableIsLoading] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [licenseNo, setLicenseNo] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
+  const [fname, setfName] = useState("");
+  const [lname, setlName] = useState("");
+  const [bloodtype, setBloodType] = useState("");
+  const [age, setAge] = useState("");
 
   useEffect(() => {
-    getAllHospitals();
+    getAllPatientsFunc();
     setTableIsLoading(false);
   }, []);
 
-  const getAllHospitals = async () => {
+  const getAllPatientsFunc = async () => {
     setTableIsLoading(true);
-    const data = await getAllHospital();
-    setHospitals(data);
+    const data = await getAllPatients();
+    setPatients(data);
   };
 
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "First Name",
+      dataIndex: "patient__fname",
+      key: "patient__fname",
       render: (text) => <div>{text}</div>,
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "Last Name",
+      dataIndex: "patient__lname",
+      key: "patient__lname",
     },
+
     {
-      title: "License No",
-      dataIndex: "license_no",
-      key: "license_no",
-      render: (_, { license_no }) => (
-        <Tag color="green" key={license_no}>
-          {license_no}
+      title: "BloodType",
+      dataIndex: "patient__bloodtype",
+      key: "patient__bloodtype",
+      render: (_, { patient__bloodtype }) => (
+        <Tag color="orange" key={patient__bloodtype}>
+          {patient__bloodtype}
         </Tag>
       ),
     },
     {
-      title: "Contact No",
-      dataIndex: "phone_number",
-      key: "phone_number",
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Created At",
-      dataIndex: "created_at",
-      key: "created_at",
-      render: (_, { created_at }) => (
-        <Tag
-          color="yellow"
-          className="text-sm font-bold text-black"
-          key={created_at}
-        >
-          {new Date(created_at).toDateString()}
+      title: "Age",
+      dataIndex: "patient__dob",
+      key: "patient__dob",
+      render: (_, { patient__dob }) => (
+        <Tag color="green" key={patient__dob}>
+          {patient__dob}
         </Tag>
       ),
     },
-    // {
-    //   title: "Tags",
-    //   key: "tags",
-    //   dataIndex: "tags",
-    //   render: (_, { tags }) => (
-    //     <>
-    //       {tags.map((tag) => {
-    //         let color = tag.length > 5 ? "geekblue" : "green";
-    //         if (tag === "loser") {
-    //           color = "volcano";
-    //         }
-    //         return (
-    //           <Tag color={color} key={tag}>
-    //             {tag.toUpperCase()}
-    //           </Tag>
-    //         );
-    //       })}
-    //     </>
-    //   ),
-    // },
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_, record) => (
-    //     <Space size="middle">
-    //       <div>Invite {record.name}</div>
-    //       <div>Delete</div>
-    //     </Space>
-    //   ),
-    // },
   ];
 
-  const submitHospital = async () => {
-    if (
-      name !== "" &&
-      email !== "" &&
-      licenseNo !== "" &&
-      phoneNumber !== "" &&
-      address !== ""
-    ) {
+  const submitPatient = async () => {
+    if (fname !== "" && lname !== "" && bloodtype !== "" && age !== "") {
       setIsLoading(true);
-      const res = await newHospital(
-        name,
-        email,
-        licenseNo,
-        phoneNumber,
-        address
-      );
+      const res = await newPatient(fname, lname, bloodtype, age, "");
       if (res) {
         setIsLoading(false);
-        setName("");
-        setEmail("");
-        setLicenseNo("");
-        setPhoneNumber("");
-        setAddress("");
-        setOpenHospitalModal(false);
+        setfName("");
+        setlName("");
+        setBloodType("");
+        setAge("");
+        setOpenPatientModal(false);
         window.location.reload();
       } else {
         setIsLoading(false);
@@ -143,14 +86,14 @@ const HospitalAdmin = () => {
     }
   };
 
-  const searchHospitals = (text) => {
-    let newArray = hospitals.filter((o) =>
+  const searchPatients = (text) => {
+    let newArray = Patients.filter((o) =>
       Object.keys(o).some((k) =>
         o[k].toString().toLowerCase().includes(text.toLowerCase())
       )
     );
 
-    setFilteredHospitals(newArray);
+    setFilteredPatients(newArray);
   };
 
   return (
@@ -159,7 +102,7 @@ const HospitalAdmin = () => {
         style={{
           top: 20,
         }}
-        open={openHospitalModal}
+        open={openPatientModal}
         footer={null}
         closeIcon={<p></p>}
       >
@@ -168,7 +111,7 @@ const HospitalAdmin = () => {
             <div className="p-4 sm:p-7">
               <div className="text-center">
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
-                  Add new hospital to the network
+                  Add new Patient to the network
                 </h1>
               </div>
 
@@ -180,7 +123,7 @@ const HospitalAdmin = () => {
                         for="name"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter hospital name
+                        Enter First Name
                       </label>
                       <div className="relative">
                         <input
@@ -190,7 +133,7 @@ const HospitalAdmin = () => {
                           className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                           required
                           onChange={(e) => {
-                            setName(e.target.value.trim());
+                            setfName(e.target.value.trim());
                           }}
                           aria-describedby="name-error"
                         />
@@ -198,92 +141,72 @@ const HospitalAdmin = () => {
                     </div>
                     <div>
                       <label
-                        for="email"
+                        for="lname"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter email
+                        Enter Last Name
                       </label>
                       <div className="relative">
                         <input
                           type="text"
-                          id="email"
-                          name="email"
+                          id="lname"
+                          name="lname"
                           className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                           required
                           onChange={(e) => {
-                            setEmail(e.target.value.trim());
+                            setlName(e.target.value.trim());
                           }}
-                          aria-describedby="email-error"
+                          aria-describedby="lname-error"
                         />
                       </div>
                     </div>
                     <div>
                       <label
-                        for="licenseNo"
+                        for="bloodtype"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter licenseNo
+                        Enter Blood Type
                       </label>
                       <div className="relative">
                         <input
                           type="text"
-                          id="licenseNo"
-                          name="licenseNo"
+                          id="bloodtype"
+                          name="bloodtype"
                           className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                           required
                           onChange={(e) => {
-                            setLicenseNo(e.target.value.trim());
+                            setBloodType(e.target.value.trim());
                           }}
-                          aria-describedby="licenseNo-error"
+                          aria-describedby="bloodtype-error"
                         />
                       </div>
                     </div>
                     <div>
                       <label
-                        for="phoneNumber"
+                        for="age"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter phoneNumber
+                        Enter age
                       </label>
                       <div className="relative">
                         <input
                           type="text"
-                          id="phoneNumber"
-                          name="phoneNumber"
+                          id="age"
+                          name="age"
                           className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                           required
                           onChange={(e) => {
-                            setPhoneNumber(e.target.value.trim());
+                            setAge(e.target.value.trim());
                           }}
-                          aria-describedby="phoneNumber-error"
+                          aria-describedby="age-error"
                         />
                       </div>
                     </div>
-                    <div>
-                      <label
-                        for="address"
-                        className="block text-sm font-bold ml-1 mb-2 dark:text-white"
-                      >
-                        Enter address
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="address"
-                          name="address"
-                          className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
-                          required
-                          onChange={(e) => {
-                            setAddress(e.target.value.trim());
-                          }}
-                          aria-describedby="address-error"
-                        />
-                      </div>
-                    </div>
+
                     <button
                       type="button"
                       disabled={isLoading}
-                      onClick={submitHospital}
+                      onClick={submitPatient}
                       className={
                         !isLoading
                           ? "py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
@@ -296,7 +219,7 @@ const HospitalAdmin = () => {
 
                     <button
                       type="button"
-                      onClick={() => setOpenHospitalModal(false)}
+                      onClick={() => setOpenPatientModal(false)}
                       className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                     >
                       Cancel
@@ -314,11 +237,11 @@ const HospitalAdmin = () => {
         <div className="pt-20 pb-1 place-items-center place-content-center">
           <button
             onClick={() => {
-              setOpenHospitalModal(true);
+              setOpenPatientModal(true);
             }}
             className="group rounded-2xl h-12 w-48 bg-green-600 font-bold text-sm text-white relative overflow-hidden"
           >
-            Add New Hospital
+            Add New Patient
             <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-2xl"></div>
           </button>
         </div>
@@ -330,9 +253,9 @@ const HospitalAdmin = () => {
             placeholder="Search"
             onChange={(e) => {
               if (e.target.value.trim() !== "") {
-                searchHospitals(e.target.value.trim());
+                searchPatients(e.target.value.trim());
               } else {
-                setFilteredHospitals([]);
+                setFilteredPatients([]);
               }
             }}
           />
@@ -341,7 +264,7 @@ const HospitalAdmin = () => {
           <Table
             columns={columns}
             dataSource={
-              filteredHospitals.length > 0 ? filteredHospitals : hospitals
+              filteredPatients.length > 0 ? filteredPatients : Patients
             }
             loading={isTableLoading}
           />
@@ -351,4 +274,4 @@ const HospitalAdmin = () => {
   );
 };
 
-export default HospitalAdmin;
+export default PatientDrugs;
