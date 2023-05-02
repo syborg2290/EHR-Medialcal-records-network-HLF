@@ -7,9 +7,9 @@ const walletPath = "./wallet";
 // const ccp = yaml.safeLoad(fs.readFileSync('./connection.yaml'))
 // const  caConfig = ccp.certificateAuthorities[ccp.organizations.Peepaltree.certificateAuthorities[0]]
 
-const registerUser = async (clientType) => {
+const registerUser = async (clientType, patientId) => {
   try {
-    const clientName = clientType + "-" + uuidv4();
+    const clientName = clientType + "-" + patientId;
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     const admin = await wallet.get("admin");
     if (!admin) {

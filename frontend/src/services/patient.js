@@ -26,10 +26,11 @@ export const newPatient = (fname, lname, boodType, age, consenter) => {
           swal({
             text: res.data.message.toUpperCase(),
             title: "Successfully done!",
+            tesxt: `Patient ID : ${res.data.credentials.patientID} \n Private Key : ${res.data.credentials.privatekey}`,
             position: "center",
             icon: "success",
             showConfirmButton: false,
-            timer: 1500,
+            timer: 10000,
           });
           resolve(res.data.message);
         }
@@ -69,6 +70,37 @@ export const getAllPatients = () => {
         } else {
           resolve([]);
         }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+export const getLoggedPatient = () => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/patient/patient" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+          },
+        }
+      )
+      .then((res) => {
+        resolve(res.data.data);
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.message) {
