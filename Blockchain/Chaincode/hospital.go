@@ -7,16 +7,17 @@ import (
 	"time"
 )
 
-func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patientID, hospitalID, refDoctor string) (string, error) {
-	if ctx.GetData() == nil {
-		return "", Errorf("Patient of ID %v doesn't exists", patientID)
-	}
+func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patientID, hospitalID, refDoctor, title string) (string, error) {
+	// if ctx.GetData() == nil {
+	// 	return "", Errorf("Patient of ID %v doesn't exists", patientID)
+	// }
 	id := REPORT + getSafeRandomString(ctx.GetStub())
 	report := Report{
 		DocTyp:      REPORT,
 		ID:          id,
 		PatientID:   patientID,
 		HospitalID:  hospitalID,
+		Title:       title,
 		Status:      "0",
 		RefDoctorID: refDoctor,
 		Comments:    make(map[string]string),

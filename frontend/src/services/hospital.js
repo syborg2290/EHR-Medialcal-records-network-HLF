@@ -48,6 +48,54 @@ export const newHospital = (name, email, licenseNo, phoneNumber, address) => {
   });
 };
 
+export const newReport = (hospital_id, doctor_id, title) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(
+        "http://localhost:4000/hospital/createreport",
+        {
+          clientId: localStorage.getItem("health-user-id"),
+          patient_id: localStorage
+            .getItem("health-user-id")
+            .split("patient-")[1],
+          hospitalID: hospital_id,
+          ref_doctor: doctor_id,
+          title: title,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res)
+        if (res.data.message) {
+          swal({
+            text: res.data.message.toUpperCase(),
+            title: "Successfully done!",
+            position: "center",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          resolve(res.data.message);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
 export const getAllHospital = () => {
   return new Promise((resolve, reject) => {
     axios

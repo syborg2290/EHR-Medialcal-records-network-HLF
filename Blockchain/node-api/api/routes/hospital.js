@@ -14,12 +14,16 @@ routes.post("/createreport", (req, res) => {
       req.body.patient_id,
       req.body.hospitalID,
       req.body.ref_doctor,
+      req.body.title,
     ],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
       } else {
-        res.status(200).json(payload.toString());
+        res.status(200).json({
+          message: `Successfully created new report ${req.body.title}`,
+          data: payload,
+        });
       }
     }
   );

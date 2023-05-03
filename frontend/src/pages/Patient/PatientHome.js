@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Chart as ChartJS,
@@ -8,6 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bubble } from "react-chartjs-2";
+import { getLoggedPatient } from "../../services/patient";
 const { faker } = require("@faker-js/faker");
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
@@ -45,6 +46,17 @@ export const data = {
 
 const PatientHome = () => {
   const navigate = useNavigate();
+  const [patient, setPatient] = useState({});
+
+  useEffect(() => {
+    getPatientFunc();
+  }, []);
+
+  const getPatientFunc = async () => {
+    const data = await getLoggedPatient();
+    setPatient(data);
+  };
+
   return (
     <section className="text-gray-600 body-font bg-gray-50 h-screen flex justify-center items-center">
       <div className="container px-5 py-24 mx-auto">
@@ -163,15 +175,17 @@ const PatientHome = () => {
               <div className="mb-10">
                 <div>
                   <span className="text-lg font-bold">Name : </span>
-                  <span className="text-xl">Kasun Gamage</span>
+                  <span className="text-xl">
+                    {patient.patient__fname} {patient.patient__lname}
+                  </span>
                 </div>
                 <div>
                   <span className="text-lg font-bold">Age : </span>
-                  <span className="text-xl">30</span>
+                  <span className="text-xl">{patient.patient__dob}</span>
                 </div>
                 <div>
                   <span className="text-lg font-bold">Blood Type : </span>
-                  <span className="text-xl">0+</span>
+                  <span className="text-xl">{patient.patient__bloodtype}</span>
                 </div>
               </div>
 

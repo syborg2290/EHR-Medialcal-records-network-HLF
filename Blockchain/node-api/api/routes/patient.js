@@ -2,28 +2,45 @@ const express = require("express");
 const { contract } = require("../contract");
 
 const { v4: uuidv4 } = require("uuid");
+const registerUser = require("../../test-client/registerUser");
 const routes = express.Router();
 
 routes.post("/register", (req, res) => {
+  const patientId = uuidv4();
   contract(
     req.body.clientId,
     "INVOKE",
     [
       "RegisterPatient",
-      uuidv4(),
+      patientId,
       req.body.fname,
       req.body.lname,
       req.body.boodType,
       req.body.age,
       req.body.consenter,
     ],
-    (err, payload) => {
+    async (err, payload) => {
       if (err) {
         res.status(500).json(err);
       } else {
-        res.status(200).json({
-          message: "successfully registered",
-        });
+        const response = await registerUser("patient", patientId);
+        if (!response) {
+          res.status(500).json({ message: "Something went wrong!" });
+        } else {
+          const privateKey = response.credentials.privateKey;
+          const privateKeyRegex =
+            /-----BEGIN PRIVATE KEY-----(.*)-----END PRIVATE KEY-----/s;
+          const extractedPrivateKey = privateKey
+            .match(privateKeyRegex)[1]
+            .trim();
+          res.status(200).json({
+            message: "successfully registered",
+            credentials: {
+              patientID: "patient-" + patientId,
+              privatekey: extractedPrivateKey.replace(/[\r\n]/gm, ""),
+            },
+          });
+        }
       }
     }
   );
@@ -36,6 +53,24 @@ routes.get("/all", (req, res) => {
     } else {
       const patients = JSON.parse(payload);
       res.status(200).json(patients);
+    }
+  });
+});
+
+routes.get("/patient", (req, res) => {
+  contract(req.query.clientId, "QUERY", ["GetAllConsents"], (err, payload) => {
+    if (err) {
+      res.status(500).json(err);
+    } else {
+      const patientId = req.query.clientId.split("patient-");
+
+      const patients = JSON.parse(payload);
+
+      var patientsArray = patients.filter(function (el) {
+        return el.patient__id === patientId[1];
+      });
+
+      res.status(200).json({ data: patientsArray[0] });
     }
   });
 });
