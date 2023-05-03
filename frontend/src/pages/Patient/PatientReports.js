@@ -1,30 +1,44 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
-import { Table, Tag, Modal, Spin } from "antd";
-import { getAllPatients, newPatient } from "../../services/patient";
+import { Table, Tag, Modal, Spin, Select } from "antd";
+import { getAllHospital, newReport } from "../../services/hospital";
+import { getAllDoctors } from "../../services/doctor";
 
 const PatientReports = () => {
-  const [Patients, setPatients] = useState([]);
-  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [Report, setReport] = useState([]);
+  const [filteredReport, setFilteredReport] = useState([]);
   const [openPatientModal, setOpenPatientModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setTableIsLoading] = useState(false);
-  const [fname, setfName] = useState("");
-  const [lname, setlName] = useState("");
-  const [bloodtype, setBloodType] = useState("");
-  const [age, setAge] = useState("");
+  const [hospitals, setHospitals] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [hospital, setHospital] = useState("");
+  const [doctor, setDoctor] = useState("");
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
-    getAllPatientsFunc();
+    getAllReportFunc();
+    getAllHospitals();
+    getAllDoctorsFunc();
     setTableIsLoading(false);
   }, []);
 
-  const getAllPatientsFunc = async () => {
-    // setTableIsLoading(true);
-    // const data = await getAllPatients();
-    // setPatients(data);
+  const getAllHospitals = async () => {
+    const data = await getAllHospital();
+    setHospitals(data);
+  };
 
-    setPatients([
+  const getAllDoctorsFunc = async () => {
+    const data = await getAllDoctors();
+    setDoctors(data);
+  };
+
+  const getAllReportFunc = async () => {
+    // setTableIsLoading(true);
+    // const data = await getAllReport();
+    // setReport(data);
+
+    setReport([
       {
         reportId: "fdi486-53495khfd-43653k",
         hospital: "Asiri Hospital",
@@ -83,16 +97,15 @@ const PatientReports = () => {
     },
   ];
 
-  const submitPatient = async () => {
-    if (fname !== "" && lname !== "" && bloodtype !== "" && age !== "") {
+  const submitReport = async () => {
+    if (hospital !== "" && doctor !== "" && title !== "") {
       setIsLoading(true);
-      const res = await newPatient(fname, lname, bloodtype, age, "");
+      const res = await newReport(hospital, doctor, title);
       if (res) {
         setIsLoading(false);
-        setfName("");
-        setlName("");
-        setBloodType("");
-        setAge("");
+        setDoctor("");
+        setTitle("");
+        setHospital("");
         setOpenPatientModal(false);
         window.location.reload();
       } else {
@@ -109,14 +122,14 @@ const PatientReports = () => {
     }
   };
 
-  const searchPatients = (text) => {
-    let newArray = Patients.filter((o) =>
+  const searchReport = (text) => {
+    let newArray = Report.filter((o) =>
       Object.keys(o).some((k) =>
         o[k].toString().toLowerCase().includes(text.toLowerCase())
       )
     );
 
-    setFilteredPatients(newArray);
+    setFilteredReport(newArray);
   };
 
   return (
@@ -134,7 +147,7 @@ const PatientReports = () => {
             <div className="p-4 sm:p-7">
               <div className="text-center">
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
-                  Add new Patient to the network
+                  Create new report
                 </h1>
               </div>
 
@@ -143,85 +156,71 @@ const PatientReports = () => {
                   <div className="grid gap-y-4">
                     <div>
                       <label
-                        for="name"
+                        for="title"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter First Name
+                        Title
                       </label>
                       <div className="relative">
                         <input
                           type="text"
-                          id="name"
-                          name="name"
+                          id="title"
+                          name="title"
                           className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
                           required
                           onChange={(e) => {
-                            setfName(e.target.value.trim());
+                            setTitle(e.target.value.trim());
                           }}
-                          aria-describedby="name-error"
+                          aria-describedby="title-error"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        for="hospital"
+                        className="block text-sm font-bold ml-1 mb-2 dark:text-white"
+                      >
+                        Select the hospital
+                      </label>
+                      <div className="relative">
+                        <Select
+                          placeholder=""
+                          value={hospital}
+                          onChange={(value) => {
+                            setHospital(value);
+                          }}
+                          style={{
+                            width: "100%",
+                          }}
+                          options={hospitals.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                          }))}
                         />
                       </div>
                     </div>
                     <div>
                       <label
-                        for="lname"
+                        for="doctor"
                         className="block text-sm font-bold ml-1 mb-2 dark:text-white"
                       >
-                        Enter Last Name
+                        Select the doctor
                       </label>
                       <div className="relative">
-                        <input
-                          type="text"
-                          id="lname"
-                          name="lname"
-                          className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
-                          required
-                          onChange={(e) => {
-                            setlName(e.target.value.trim());
+                        <Select
+                          placeholder=""
+                          value={doctor}
+                          onChange={(value) => {
+                            setDoctor(value);
                           }}
-                          aria-describedby="lname-error"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label
-                        for="bloodtype"
-                        className="block text-sm font-bold ml-1 mb-2 dark:text-white"
-                      >
-                        Enter Blood Type
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="bloodtype"
-                          name="bloodtype"
-                          className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
-                          required
-                          onChange={(e) => {
-                            setBloodType(e.target.value.trim());
+                          style={{
+                            width: "100%",
                           }}
-                          aria-describedby="bloodtype-error"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label
-                        for="age"
-                        className="block text-sm font-bold ml-1 mb-2 dark:text-white"
-                      >
-                        Enter age
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="age"
-                          name="age"
-                          className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
-                          required
-                          onChange={(e) => {
-                            setAge(e.target.value.trim());
-                          }}
-                          aria-describedby="age-error"
+                          options={doctors.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                          }))}
                         />
                       </div>
                     </div>
@@ -229,7 +228,7 @@ const PatientReports = () => {
                     <button
                       type="button"
                       disabled={isLoading}
-                      onClick={submitPatient}
+                      onClick={submitReport}
                       className={
                         !isLoading
                           ? "py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
@@ -276,9 +275,9 @@ const PatientReports = () => {
             placeholder="Search"
             onChange={(e) => {
               if (e.target.value.trim() !== "") {
-                searchPatients(e.target.value.trim());
+                searchReport(e.target.value.trim());
               } else {
-                setFilteredPatients([]);
+                setFilteredReport([]);
               }
             }}
           />
@@ -286,9 +285,7 @@ const PatientReports = () => {
         <div className="pl-10 pr-10 pb-10 pt-5">
           <Table
             columns={columns}
-            dataSource={
-              filteredPatients.length > 0 ? filteredPatients : Patients
-            }
+            dataSource={filteredReport.length > 0 ? filteredReport : Report}
             loading={isTableLoading}
           />
         </div>
