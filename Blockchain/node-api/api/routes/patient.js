@@ -150,48 +150,140 @@ routes.put("/giveconsent", (req, res) => {
   );
 });
 
-routes.get("/test", (req, res) => {
-  contract(req.query.clientId, "QUERY", ["GetTest"], (err, payload) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      const test = JSON.parse(payload);
-      res.status(200).json(test);
+routes.get("/tests", (req, res) => {
+  const patientId = req.headers.patientid;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetTestsByPatientID", patientId],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const tests = JSON.parse(payload);
+        res.status(200).json(tests);
+      }
     }
-  });
+  );
+});
+
+routes.get("/test", (req, res) => {
+  const testID = req.headers.testID;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetTestByID", testID],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const test = JSON.parse(payload);
+        res.status(200).json(test);
+      }
+    }
+  );
+});
+
+routes.get("/reports", (req, res) => {
+  const patientId = req.headers.patientid;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetReportsByPatientID", patientId],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const reports = JSON.parse(payload);
+        res.status(200).json(reports);
+      }
+    }
+  );
 });
 
 routes.get("/report", (req, res) => {
-  contract(req.query.clientId, "QUERY", ["GetReport"], (err, payload) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      const test = JSON.parse(payload);
-      res.status(200).json(test);
+  const reportID = req.headers.reportID;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetReportByID", reportID],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const report = JSON.parse(payload);
+        res.status(200).json(report);
+      }
     }
-  });
+  );
+});
+
+routes.get("/treatments", (req, res) => {
+  const patientId = req.headers.patientid;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetTreatmentsByPatientID", patientId],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const treatments = JSON.parse(payload);
+        res.status(200).json(treatments);
+      }
+    }
+  );
 });
 
 routes.get("/treatment", (req, res) => {
-  contract(req.query.clientId, "QUERY", ["GetTreatment"], (err, payload) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      const test = JSON.parse(payload);
-      res.status(200).json(test);
+  const treatmentID = req.headers.treatmentID;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetTreatmentByID", treatmentID],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const treatment = JSON.parse(payload);
+        res.status(200).json(treatment);
+      }
     }
-  });
+  );
 });
 
 routes.get("/drugs", (req, res) => {
-  contract(req.query.clientId, "QUERY", ["GetDrugs"], (err, payload) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      const test = JSON.parse(payload);
-      res.status(200).json(test);
+  const patientId = req.headers.patientid;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetDrugsByPatientID", patientId],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const drugs = JSON.parse(payload);
+        res.status(200).json(drugs);
+      }
     }
-  });
+  );
+});
+
+routes.get("/drug", (req, res) => {
+  const drugID = req.headers.drugID;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetDrugByID", drugID],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const drug = JSON.parse(payload);
+        res.status(200).json(drug);
+      }
+    }
+  );
 });
 
 module.exports = routes;

@@ -64,24 +64,20 @@ const PatientHome = () => {
           Patient Portal Of Healthcare Network
         </h1>
 
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2 cursor-pointer">
           <div>
-            <div className="flex flex-wrap -m-4 text-center">
+            <div
+              className="flex flex-wrap -m-4 text-center"
+              onClick={() => {
+                navigate("/patient-reports");
+              }}
+            >
               <div className="p-4 lg:w-2/3 w-full hover:scale-105 duration-500">
                 <div className=" flex items-center  justify-between p-4  rounded-lg bg-white shadow-indigo-50 shadow-md">
                   <div>
                     <h2 className="text-gray-900 text-3xl font-bold">
                       Patient Treatments
                     </h2>
-
-                    <button
-                      onClick={() => {
-                        navigate("/patient-treatments");
-                      }}
-                      className="text-sm mt-6 px-4 py-2 bg-yellow-400 text-white rounded-lg  tracking-wider hover:bg-yellow-300 outline-none"
-                    >
-                      Enter
-                    </button>
                   </div>
                   <div className="bg-gradient-to-tr from-yellow-500 to-yellow-400 w-32 h-32  rounded-full shadow-2xl shadow-yellow-400 border-white  border-dashed border-2  flex justify-center items-center ">
                     <div>
@@ -92,22 +88,18 @@ const PatientHome = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap -m-4 text-center">
+            <div
+              className="flex flex-wrap -m-4 text-center cursor-pointer"
+              onClick={() => {
+                navigate("/patient-reports");
+              }}
+            >
               <div className="p-4 lg:w-2/3 w-full hover:scale-105 duration-500">
                 <div className=" flex items-center  justify-between p-4  rounded-lg bg-white shadow-indigo-50 shadow-md">
                   <div>
                     <h2 className="text-gray-900 text-3xl font-bold">
                       Patient Tests
                     </h2>
-
-                    <button
-                      onClick={() => {
-                        navigate("/patient-tests");
-                      }}
-                      className="text-sm mt-6 px-4 py-2 bg-blue-400 text-white rounded-lg  tracking-wider hover:bg-blue-300 outline-none"
-                    >
-                      Enter
-                    </button>
                   </div>
                   <div className="bg-gradient-to-tr from-blue-500 to-blue-400 w-32 h-32  rounded-full shadow-2xl shadow-blue-400 border-white  border-dashed border-2  flex justify-center items-center ">
                     <div>
@@ -118,22 +110,18 @@ const PatientHome = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap -m-4 text-center">
+            <div
+              className="flex flex-wrap -m-4 text-center cursor-pointer"
+              onClick={() => {
+                navigate("/patient-reports");
+              }}
+            >
               <div className="p-4  lg:w-2/3 w-full hover:scale-105 duration-500">
                 <div className=" flex items-center  justify-between p-4  rounded-lg bg-white shadow-indigo-50 shadow-md">
                   <div>
                     <h2 className="text-gray-900 text-3xl font-bold">
                       Patient Drugs
                     </h2>
-
-                    <button
-                      onClick={() => {
-                        navigate("/patient-drugs");
-                      }}
-                      className="text-sm mt-6 px-4 py-2 bg-red-400 text-white rounded-lg  tracking-wider hover:bg-red-300 outline-none"
-                    >
-                      Enter
-                    </button>
                   </div>
                   <div className="bg-gradient-to-tr from-red-500 to-red-400 w-32 h-32  rounded-full shadow-2xl shadow-red-400 border-white  border-dashed border-2  flex justify-center items-center ">
                     <div>
@@ -144,22 +132,18 @@ const PatientHome = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap -m-4 text-center">
+            <div
+              className="flex flex-wrap -m-4 text-center cursor-pointer"
+              onClick={() => {
+                navigate("/patient-reports");
+              }}
+            >
               <div className="p-4  lg:w-2/3 w-full hover:scale-105 duration-500">
                 <div className=" flex items-center  justify-between p-4  rounded-lg bg-white shadow-indigo-50 shadow-md">
                   <div>
                     <h2 className="text-gray-900 text-3xl font-bold">
                       Patient Reports
                     </h2>
-
-                    <button
-                      onClick={() => {
-                        navigate("/patient-reports");
-                      }}
-                      className="text-sm mt-6 px-4 py-2 bg-blue-400 text-white rounded-lg  tracking-wider hover:bg-blue-300 outline-none"
-                    >
-                      Enter
-                    </button>
                   </div>
                   <div className="bg-gradient-to-tr from-blue-500 to-blue-400 w-32 h-32  rounded-full shadow-2xl shadow-blue-400 border-white  border-dashed border-2  flex justify-center items-center ">
                     <div>

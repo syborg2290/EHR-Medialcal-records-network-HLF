@@ -125,3 +125,35 @@ export const getAllDoctorsTransactionsCount = () => {
       });
   });
 };
+
+export const getDoctor = (doctorId) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/doctor/doctor" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+            doctorID: doctorId,
+          },
+        }
+      )
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};

@@ -69,7 +69,7 @@ export const newReport = (hospital_id, doctor_id, title) => {
         }
       )
       .then((res) => {
-        console.log(res)
+        console.log(res);
         if (res.data.message) {
           swal({
             text: res.data.message.toUpperCase(),
@@ -151,6 +151,38 @@ export const getAllHospitalsCount = () => {
         } else {
           resolve(0);
         }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+export const getHospital = (hospitalId) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/hospital/hospital" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+            "hospitalID": hospitalId,
+          },
+        }
+      )
+      .then((res) => {
+        resolve(res.data);
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.message) {

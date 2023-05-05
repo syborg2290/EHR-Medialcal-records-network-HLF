@@ -84,4 +84,21 @@ routes.get("/labs-count", (req, res) => {
   });
 });
 
+routes.get("/lab", (req, res) => {
+  const labID = req.headers.labID;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetLabByID", labID],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const lab = JSON.parse(payload);
+        res.status(200).json(lab);
+      }
+    }
+  );
+});
+
 module.exports = routes;

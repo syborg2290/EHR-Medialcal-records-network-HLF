@@ -71,8 +71,8 @@ type Report struct {
 	HospitalID string `json:"hospital_id"`
 	// DrugsID []string `json:"drugs_id"`      			///
 	// TreatmentID []string `json:"treatment_id"`		/// these will be stored
-	// TestID []string `json:"test_id"`	
-	Title      string            `json:"title"`				///
+	// TestID []string `json:"test_id"`
+	Title       string            `json:"title"` ///
 	Status      string            `json:"status"`
 	RefDoctorID string            `json:"doctor_id"`
 	Comments    map[string]string `json:"comments"`
@@ -84,6 +84,7 @@ type Report struct {
 type Drugs struct {
 	DocTyp      string            `json:"docTyp"`
 	ReportID    string            `json:"report_id"`
+	PatientID   string            `json:"patient_id"`
 	PharamacyID string            `json:"pharmacy_id"`
 	ID          string            `json:"drugs_id"`
 	For         string            `json:"patient__id"`
