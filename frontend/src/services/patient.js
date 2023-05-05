@@ -150,3 +150,151 @@ export const getAllPatientsTransactionsCount = () => {
       });
   });
 };
+
+export const getAllPatientReports = () => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/patient/reports" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+            "patientId": localStorage
+              .getItem("health-user-id")
+              .split("patient-")[1],
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.length > 0) {
+          resolve(res.data);
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+export const getAllPatientTests = () => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/patient/tests" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+            "patientId": localStorage
+              .getItem("health-user-id")
+              .split("patient-")[1],
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.length > 0) {
+          resolve(res.data);
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+export const getAllPatientTreatments = () => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/patient/treatments" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+            "patientId": localStorage
+              .getItem("health-user-id")
+              .split("patient-")[1],
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.length > 0) {
+          resolve(res.data);
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+export const getAllPatientDrugs = () => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/patient/drugs" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+            "patientId": localStorage
+              .getItem("health-user-id")
+              .split("patient-")[1],
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.length > 0) {
+          resolve(res.data);
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};

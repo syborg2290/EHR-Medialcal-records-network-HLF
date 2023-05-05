@@ -129,3 +129,34 @@ func (s *Chaincode) GetAllHospitals(ctx CustomTransactionContextInterface) ([]*H
 
 	return hospitals, nil
 }
+
+func (c *Chaincode) GetHospitalByID(ctx CustomTransactionContextInterface, hospitalID string) (*Hospital, error) {
+	// Create a new query string to get the DOCTOR HOSPITAL for the given hospitalID
+	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "id": "%s"}}`, HOSPITAL, hospitalID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Iterate over the query results and deserialize the document
+	if queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Hospital struct
+		var hospital Hospital
+		err = json.Unmarshal(queryResult.Value, &hospital)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize hospital: %v", err)
+		}
+
+		return &hospital, nil
+	}
+
+	return nil, nil // return nil if no matching hospital found
+}

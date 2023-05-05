@@ -157,6 +157,72 @@ func (c *Chaincode) GetTest(ctx CustomTransactionContextInterface, key, requeste
 	return test, nil
 }
 
+func (c *Chaincode) GetTestByID(ctx CustomTransactionContextInterface, testID string) (*Test, error) {
+	// Create a new query string to get the TESTS document for the given reportID
+	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "test_id": "%s"}}`, TESTS, testID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Iterate over the query results and deserialize the document
+	if queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Test struct
+		var test Test
+		err = json.Unmarshal(queryResult.Value, &test)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize test: %v", err)
+		}
+
+		return &test, nil
+	}
+
+	return nil, nil // return nil if no matching test found
+}
+
+func (c *Chaincode) GetTestsByPatientID(ctx CustomTransactionContextInterface, patientID string) ([]*Test, error) {
+	// Create a new query string to get all TESTS documents for the given patientID
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "patient_id": "%s"}}`, TESTS, patientID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Create a slice to hold the results
+	var tests []*Test
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Test struct
+		var test Test
+		err = json.Unmarshal(queryResult.Value, &test)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize test: %v", err)
+		}
+
+		// Add the test to the results slice
+		tests = append(tests, &test)
+	}
+
+	return tests, nil
+}
+
 func (c *Chaincode) GetReport(ctx CustomTransactionContextInterface, key, requester string) (Report, error) {
 	existing, err := ctx.GetStub().GetState(key)
 	if err != nil {
@@ -176,6 +242,72 @@ func (c *Chaincode) GetReport(ctx CustomTransactionContextInterface, key, reques
 		return Report{}, fmt.Errorf("Please get consent from the patient")
 	}
 	return report, nil
+}
+
+func (c *Chaincode) GetReportByID(ctx CustomTransactionContextInterface, reportID string) (*Report, error) {
+	// Create a new query string to get the REPORT document for the given reportID
+	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "report_id": "%s"}}`, REPORT, reportID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Iterate over the query results and deserialize the document
+	if queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Report struct
+		var report Report
+		err = json.Unmarshal(queryResult.Value, &report)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize report: %v", err)
+		}
+
+		return &report, nil
+	}
+
+	return nil, nil // return nil if no matching report found
+}
+
+func (c *Chaincode) GetReportsByPatientID(ctx CustomTransactionContextInterface, patientID string) ([]*Report, error) {
+	// Create a new query string to get all REPORT documents for the given patientID
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "patient_id": "%s"}}`, REPORT, patientID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Create a slice to hold the results
+	var reports []*Report
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Report struct
+		var report Report
+		err = json.Unmarshal(queryResult.Value, &report)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize report: %v", err)
+		}
+
+		// Add the report to the results slice
+		reports = append(reports, &report)
+	}
+
+	return reports, nil
 }
 
 func (c *Chaincode) GetTreatment(ctx CustomTransactionContextInterface, key, requester string) (Treatment, error) {
@@ -199,6 +331,72 @@ func (c *Chaincode) GetTreatment(ctx CustomTransactionContextInterface, key, req
 	return treatment, nil
 }
 
+func (c *Chaincode) GetTreatmentByID(ctx CustomTransactionContextInterface, treatmentID string) (*Treatment, error) {
+	// Create a new query string to get the TESTS document for the given reportID
+	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "treatment_id": "%s"}}`, TREATMENT, treatmentID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Iterate over the query results and deserialize the document
+	if queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Treatment struct
+		var treatment Treatment
+		err = json.Unmarshal(queryResult.Value, &treatment)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize treatment: %v", err)
+		}
+
+		return &treatment, nil
+	}
+
+	return nil, nil // return nil if no matching treatment found
+}
+
+func (c *Chaincode) GetTreatmentsByPatientID(ctx CustomTransactionContextInterface, patientID string) ([]*Treatment, error) {
+	// Create a new query string to get all TREATMENT documents for the given patientID
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "patient_id": "%s"}}`, TREATMENT, patientID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Create a slice to hold the results
+	var treatments []*Treatment
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Treatment struct
+		var treatment Treatment
+		err = json.Unmarshal(queryResult.Value, &treatment)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize treatment: %v", err)
+		}
+
+		// Add the treatment to the results slice
+		treatments = append(treatments, &treatment)
+	}
+
+	return treatments, nil
+}
+
 func (c *Chaincode) GetDrugs(ctx CustomTransactionContextInterface, key, requester string) (Drugs, error) {
 	existing := ctx.GetData()
 	if existing == nil {
@@ -212,5 +410,71 @@ func (c *Chaincode) GetDrugs(ctx CustomTransactionContextInterface, key, request
 	if ok := c.checkConsent(ctx, drugs.For, requester); !ok {
 		return Drugs{}, Errorf("Please get consent form the Patient")
 	}
+	return drugs, nil
+}
+
+func (c *Chaincode) GetDrugByID(ctx CustomTransactionContextInterface, drugID string) (*Drugs, error) {
+	// Create a new query string to get the TESTS document for the given reportID
+	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "drugs_id": "%s"}}`, DRUGS, drugID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Iterate over the query results and deserialize the document
+	if queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Drugs struct
+		var drug Drugs
+		err = json.Unmarshal(queryResult.Value, &drug)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize drug: %v", err)
+		}
+
+		return &drug, nil
+	}
+
+	return nil, nil // return nil if no matching treatment found
+}
+
+func (c *Chaincode) GetDrugsByPatientID(ctx CustomTransactionContextInterface, patientID string) ([]*Drugs, error) {
+	// Create a new query string to get all DRUGS documents for the given patientID
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "patient_id": "%s"}}`, DRUGS, patientID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Create a slice to hold the results
+	var drugs []*Drugs
+
+	// Iterate over the query results and deserialize each document
+	for queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Drugs struct
+		var drug Drugs
+		err = json.Unmarshal(queryResult.Value, &drug)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize drug: %v", err)
+		}
+
+		// Add the drug to the results slice
+		drugs = append(drugs, &drug)
+	}
+
 	return drugs, nil
 }

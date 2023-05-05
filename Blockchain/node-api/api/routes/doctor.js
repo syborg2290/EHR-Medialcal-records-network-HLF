@@ -32,6 +32,7 @@ routes.post("/report/reftest", (req, res) => {
     "INVOKE",
     [
       "RefTest",
+      req.body.patient_id,
       req.body.report_id,
       req.body.labID,
       req.body.name,
@@ -54,7 +55,13 @@ routes.post("/report/reftreatment", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    ["RefTreatment", req.body.report_id, req.body.ref_doctor, req.body.name],
+    [
+      "RefTreatment",
+      req.body.patient_id,
+      req.body.report_id,
+      req.body.ref_doctor,
+      req.body.name,
+    ],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
@@ -74,6 +81,7 @@ routes.post("/report/presdrugs", (req, res) => {
     "INVOKE",
     [
       "PrescribeDrugs",
+      req.body.patient_id,
       req.body.pharamacyID,
       req.body.report_id,
       req.body.ref_doctor,
@@ -190,6 +198,23 @@ routes.get("/doctors-count", (req, res) => {
       res.status(200).json(hospitals.length);
     }
   });
+});
+
+routes.get("/doctor", (req, res) => {
+  const doctorID = req.headers.doctorid;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetDoctorByID", doctorID],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const doctor = JSON.parse(payload);
+        res.status(200).json(doctor);
+      }
+    }
+  );
 });
 
 module.exports = routes;

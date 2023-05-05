@@ -89,4 +89,21 @@ routes.get("/phramacies-count", (req, res) => {
   );
 });
 
+routes.get("/pharmacy", (req, res) => {
+  const pharmacyID = req.headers.pharmacyID;
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetPharmacyByID", pharmacyID],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const pharmacy = JSON.parse(payload);
+        res.status(200).json(pharmacy);
+      }
+    }
+  );
+});
+
 module.exports = routes;

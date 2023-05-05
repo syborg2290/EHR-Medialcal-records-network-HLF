@@ -23,10 +23,10 @@ type TestOutput struct {
 	Result []Test `json:"result"`
 }
 
-func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, labID, name, refDoctor string, typeoftest int) (string, error) {
-	if ctx.GetData() == nil {
-		return "", Errorf("Report with ID %v doesn't exists", reportID)
-	}
+func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, patientID, reportID, labID, name, refDoctor string, typeoftest int) (string, error) {
+	// if ctx.GetData() == nil {
+	// 	return "", Errorf("Report with ID %v doesn't exists", reportID)
+	// }
 
 	var report Report
 	json.Unmarshal(ctx.GetData(), &report)
@@ -41,6 +41,7 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, lab
 	test := Test{
 		DocTyp:            TESTS,
 		ReportID:          reportID,
+		PatientID:         patientID,
 		LabID:             labID,
 		ID:                id,
 		Name:              name,
@@ -49,7 +50,6 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, lab
 		MediaFileLocation: []string{},
 		CreateTime:        time.Now().Unix(),
 		UpdateTime:        time.Now().Unix(),
-		PatientID:         report.PatientID,
 	}
 	if typeoftest == 1 {
 		test.TypeOfT = 1
@@ -57,10 +57,10 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, reportID, lab
 	testAsByte, _ := json.Marshal((test))
 	return test.ID, ctx.GetStub().PutState(id, testAsByte)
 }
-func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, reportID, refDoctor, name string) (string, error) {
-	if ctx.GetData() == nil {
-		return "", Errorf("Report with ID %v doesn't exists", reportID)
-	}
+func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, patientID, reportID, refDoctor, name string) (string, error) {
+	// if ctx.GetData() == nil {
+	// 	return "", Errorf("Report with ID %v doesn't exists", reportID)
+	// }
 
 	var report Report
 	json.Unmarshal(ctx.GetData(), &report)
@@ -82,16 +82,17 @@ func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, reportID
 		MediaFileLocation: []string{},
 		CreateTime:        time.Now().Unix(),
 		UpdateTime:        time.Now().Unix(),
-		PatientID:         report.PatientID,
+		// PatientID:         report.PatientID,
+		PatientID: patientID,
 	}
 	treatmentAsByte, _ := json.Marshal(treatment)
 	return treatment.ID, ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
 
-func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, pharamacyID, reportID, refDoctor string, drug, doses []string) (string, error) {
-	if ctx.GetData() == nil {
-		return "", Errorf("Report with ID %v doesn't exists", reportID)
-	}
+func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, patientID, pharamacyID, reportID, refDoctor string, drug, doses []string) (string, error) {
+	// if ctx.GetData() == nil {
+	// 	return "", Errorf("Report with ID %v doesn't exists", reportID)
+	// }
 
 	var report Report
 	json.Unmarshal(ctx.GetData(), &report)
@@ -102,6 +103,7 @@ func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, pharam
 	drugs := Drugs{
 		DocTyp:      DRUGS,
 		ReportID:    reportID,
+		PatientID:   patientID,
 		PharamacyID: pharamacyID,
 		ID:          id,
 		RefDoctor:   refDoctor,
@@ -268,4 +270,35 @@ func (s *Chaincode) GetAllDoctors(ctx CustomTransactionContextInterface) ([]*Doc
 
 	return doctors, nil
 
+}
+
+func (c *Chaincode) GetDoctorByID(ctx CustomTransactionContextInterface, doctorID string) (*Doctor, error) {
+	// Create a new query string to get the DOCTOR document for the given reportID
+	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "id": "%s"}}`, DOCTOR, doctorID)
+
+	// Create a new query iterator using the query string
+	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %v", err)
+	}
+	defer queryResults.Close()
+
+	// Iterate over the query results and deserialize the document
+	if queryResults.HasNext() {
+		queryResult, err := queryResults.Next()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get next query result: %v", err)
+		}
+
+		// Deserialize the document into a Doctor struct
+		var doctor Doctor
+		err = json.Unmarshal(queryResult.Value, &doctor)
+		if err != nil {
+			return nil, fmt.Errorf("failed to deserialize doctor: %v", err)
+		}
+
+		return &doctor, nil
+	}
+
+	return nil, nil // return nil if no matching doctor found
 }

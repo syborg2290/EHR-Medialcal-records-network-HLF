@@ -104,4 +104,22 @@ routes.get("/hospitals-count", (req, res) => {
   });
 });
 
+routes.get("/hospital", (req, res) => {
+  const hospitalID = req.headers.hospitalid;
+
+  contract(
+    req.query.clientId,
+    "QUERY",
+    ["GetHospitalByID", hospitalID],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        const hospital = JSON.parse(payload.toString());
+        res.status(200).json(hospital);
+      }
+    }
+  );
+});
+
 module.exports = routes;

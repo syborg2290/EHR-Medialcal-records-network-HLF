@@ -37,7 +37,6 @@ export const getAlPharamcyTransactionCount = () => {
   });
 };
 
-
 export const newPharmacy = (name, email, licenseNo, phoneNumber, address) => {
   return new Promise((resolve, reject) => {
     axios
@@ -104,6 +103,38 @@ export const getAllPharmacies = () => {
         } else {
           resolve([]);
         }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+export const getPharmacy = (pharmacyID) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        "http://localhost:4000/pharmacy/pharmacy" +
+          "?clientId=" +
+          localStorage.getItem("health-user-id"),
+
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+            pharmacyID: pharmacyID,
+          },
+        }
+      )
+      .then((res) => {
+        resolve(res.data);
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.message) {

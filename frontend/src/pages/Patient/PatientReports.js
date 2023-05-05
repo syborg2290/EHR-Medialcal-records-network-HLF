@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { Table, Tag, Modal, Spin, Select } from "antd";
-import { getAllHospital, newReport } from "../../services/hospital";
-import { getAllDoctors } from "../../services/doctor";
+import {
+  getAllHospital,
+  getHospital,
+  newReport,
+} from "../../services/hospital";
+import { getAllDoctors, getDoctor } from "../../services/doctor";
+import { getAllPatientReports } from "../../services/patient";
 
 const PatientReports = () => {
-  const [Report, setReport] = useState([]);
+  const [Reports, setReports] = useState([]);
   const [filteredReport, setFilteredReport] = useState([]);
   const [openPatientModal, setOpenPatientModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,54 +39,53 @@ const PatientReports = () => {
   };
 
   const getAllReportFunc = async () => {
-    // setTableIsLoading(true);
-    // const data = await getAllReport();
-    // setReport(data);
+    setTableIsLoading(true);
+    const data = await getAllPatientReports();
+    for (var i = 0; i < data.length; i++) {
+      const hosname = (await getHospital(data[i].hospital_id)).name;
+      const doctorName = (await getDoctor(data[i].doctor_id)).name;
 
-    setReport([
-      {
-        reportId: "fdi486-53495khfd-43653k",
-        hospital: "Asiri Hospital",
-        ref_doctor: "Dr.Gamage",
-        comment: "Good",
-        status: "Positive",
-      },
-      {
-        reportId: "fdi486-53495khfd-43653k",
-        hospital: "Ruhunu Hospital",
-        ref_doctor: "Dr.Gamage",
-        comment: "Medium",
-        status: "Medium",
-      },
-    ]);
+      data[i].hospital_name = hosname;
+      data[i].doctor_name = doctorName;
+    }
+
+    setReports(data);
   };
 
   const columns = [
     {
       title: "Report Id",
-      dataIndex: "reportId",
-      key: "reportId",
+      dataIndex: "report_id",
+      key: "report_id",
+      render: (report_id) => <div>{report_id}</div>,
+    },
+
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
       render: (text) => <div>{text}</div>,
     },
     {
       title: "Hospital",
-      dataIndex: "hospital",
-      key: "hospital",
+      dataIndex: "hospital_name",
+      key: "hospital_name",
+      render: (hospital_name) => <div>{hospital_name}</div>,
     },
 
     {
       title: "Comments",
-      dataIndex: "comment",
-      key: "comment",
+      dataIndex: "comments",
+      key: "comments",
     },
 
     {
       title: "Ref Doctor",
-      dataIndex: "ref_doctor",
-      key: "ref_doctor",
-      render: (_, { ref_doctor }) => (
-        <Tag color="orange" key={ref_doctor}>
-          {ref_doctor}
+      dataIndex: "doctor_name",
+      key: "doctor_name",
+      render: (_, { doctor_name }) => (
+        <Tag color="orange" key={doctor_name}>
+          {doctor_name}
         </Tag>
       ),
     },
@@ -123,7 +127,7 @@ const PatientReports = () => {
   };
 
   const searchReport = (text) => {
-    let newArray = Report.filter((o) =>
+    let newArray = Reports.filter((o) =>
       Object.keys(o).some((k) =>
         o[k].toString().toLowerCase().includes(text.toLowerCase())
       )
@@ -285,7 +289,7 @@ const PatientReports = () => {
         <div className="pl-10 pr-10 pb-10 pt-5">
           <Table
             columns={columns}
-            dataSource={filteredReport.length > 0 ? filteredReport : Report}
+            dataSource={filteredReport.length > 0 ? filteredReport : Reports}
             loading={isTableLoading}
           />
         </div>
