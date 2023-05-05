@@ -111,7 +111,7 @@ func (s *Chaincode) GetAllPharmacies(ctx CustomTransactionContextInterface) ([]*
 
 func (c *Chaincode) GetPharmacyByID(ctx CustomTransactionContextInterface, pharmacyID string) (*Pharmacy, error) {
 	// Create a new query string to get the DOCTOR HOSPITAL for the given hospitalID
-	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "id": "%s"}}`, PHARMACY, pharmacyID)
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "id": "%s"}}`, PHARMACY, pharmacyID)
 
 	// Create a new query iterator using the query string
 	queryResults, err := ctx.GetStub().GetQueryResult(queryString)

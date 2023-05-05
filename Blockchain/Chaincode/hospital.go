@@ -29,9 +29,9 @@ func (c *Chaincode) CreateNewReport(ctx CustomTransactionContextInterface, patie
 }
 
 func (c *Chaincode) StartTreatment(ctx CustomTransactionContextInterface, treatmentID, supervisor string) error {
-	if ctx.GetData() == nil {
-		return Errorf("Treatment with ID %v doesn't exists", treatmentID)
-	}
+	// if ctx.GetData() == nil {
+	// 	return Errorf("Treatment with ID %v doesn't exists", treatmentID)
+	// }
 	var treatment Treatment
 	json.Unmarshal(ctx.GetData(), &treatment)
 	if treatment.Status != 0 {
@@ -131,8 +131,8 @@ func (s *Chaincode) GetAllHospitals(ctx CustomTransactionContextInterface) ([]*H
 }
 
 func (c *Chaincode) GetHospitalByID(ctx CustomTransactionContextInterface, hospitalID string) (*Hospital, error) {
-	// Create a new query string to get the DOCTOR HOSPITAL for the given hospitalID
-	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "id": "%s"}}`, HOSPITAL, hospitalID)
+	// Create a new query string to get the HOSPITAL for the given hospitalID
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "id": "%s"}}`, HOSPITAL, hospitalID)
 
 	// Create a new query iterator using the query string
 	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
@@ -158,5 +158,5 @@ func (c *Chaincode) GetHospitalByID(ctx CustomTransactionContextInterface, hospi
 		return &hospital, nil
 	}
 
-	return nil, nil // return nil if no matching hospital found
+	return nil, fmt.Errorf(hospitalID+" not found: %v", err) // return nil if no matching hospital found
 }
