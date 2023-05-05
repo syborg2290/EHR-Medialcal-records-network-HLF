@@ -56,6 +56,145 @@ export const newDoctor = (
   });
 };
 
+export const newCommentToReport = (report_id, comment) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .put(
+        "http://localhost:4000/doctor/report/addcomment",
+        {
+          clientId: localStorage.getItem("health-user-id"),
+          report_id: report_id,
+          comment: comment,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.message) {
+          swal({
+            text: res.data.message.toUpperCase(),
+            title: "Successfully done!",
+            position: "center",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          resolve(res.data.message);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+export const newTreatmentToReport = (report_id, ref_doctor, name) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(
+        "http://localhost:4000/doctor/report/reftreatment",
+        {
+          clientId: localStorage.getItem("health-user-id"),
+          patient_id: localStorage
+            .getItem("health-user-id")
+            .split("patient-")[1],
+          report_id: report_id,
+          ref_doctor: ref_doctor,
+          name: name,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.message) {
+          swal({
+            text: res.data.message.toUpperCase(),
+            title: "Successfully done!",
+            position: "center",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          resolve(res.data.message);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
+export const newTestToReport = (report_id, ref_doctor, name, labID) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(
+        "http://localhost:4000/doctor/report/reftest",
+        {
+          clientId: localStorage.getItem("health-user-id"),
+          patient_id: localStorage
+            .getItem("health-user-id")
+            .split("patient-")[1],
+          report_id: report_id,
+          ref_doctor: ref_doctor,
+          name: name,
+          labID: labID,
+          type_of_test: 1,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.message) {
+          swal({
+            text: res.data.message.toUpperCase(),
+            title: "Successfully done!",
+            position: "center",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          resolve(res.data.message);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
 export const getAllDoctors = () => {
   return new Promise((resolve, reject) => {
     axios
