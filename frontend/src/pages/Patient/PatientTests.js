@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { Table, Tag, Modal, Spin } from "antd";
-import { getAllPatients, newPatient } from "../../services/patient";
+import { newPatient } from "../../services/patient";
 
 const PatientTests = () => {
   const [Patients, setPatients] = useState([]);
@@ -28,9 +28,9 @@ const PatientTests = () => {
       {
         ReportID: "fdi486-53495khfd-43653k",
         Labratory: "Asiri Hospital",
-        Name:'Liver Test',
-        Supervisor:'Mr.Tharaka',
-        TestType:'',
+        Name: "Liver Test",
+        Supervisor: "Mr.Tharaka",
+        TestType: "",
         RefDoctor: "Dr.Gamage",
         Result: "5.6",
         Status: "Positive",
@@ -38,9 +38,9 @@ const PatientTests = () => {
       {
         ReportID: "fdi486-53495khfd-43653k",
         Labratory: "Ruhunu Hospital",
-        Name:'Brain Tumor Test',
-        Supervisor:'',
-        TestType:'',
+        Name: "Brain Tumor Test",
+        Supervisor: "",
+        TestType: "",
         RefDoctor: "Dr.Gamage",
         Result: "3.5",
         Status: "Medium",

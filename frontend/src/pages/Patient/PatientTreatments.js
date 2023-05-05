@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { Table, Tag, Modal, Spin } from "antd";
-import { getAllPatients, newPatient } from "../../services/patient";
+import { newPatient } from "../../services/patient";
 
 const PatientTreatments = () => {
   const [Patients, setPatients] = useState([]);

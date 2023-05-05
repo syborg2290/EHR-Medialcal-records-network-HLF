@@ -83,11 +83,10 @@ routes.post("/report/presdrugs", (req, res) => {
     [
       "PrescribeDrugs",
       req.body.patient_id,
+      req.body.reportID,
+      req.body.refDoctor,
       req.body.pharamacyID,
-      req.body.report_id,
-      req.body.ref_doctor,
-      req.body.drugs,
-      req.body.doses,
+      req.body.Drugs_note_media,
     ],
     (err, payload) => {
       if (err) {

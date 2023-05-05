@@ -10,23 +10,32 @@ import {
   getAllDoctors,
   getDoctor,
   newCommentToReport,
+  newDrugToReport,
   newTestToReport,
   newTreatmentToReport,
 } from "../../services/doctor";
 import { getAllPatientReports } from "../../services/patient";
 import { getAllLab } from "../../services/lab";
+import { getAllPharmacies } from "../../services/pharmacy";
+import { create as ipfsHttpClient } from "ipfs-http-client";
 
 const PatientReports = () => {
+  const ipfs = ipfsHttpClient({
+    url: "https://ipfs.infura.io:5001/api/v0",
+  });
   const [Reports, setReports] = useState([]);
   const [filteredReport, setFilteredReport] = useState([]);
   const [openPatientModal, setOpenPatientModal] = useState(false);
   const [openNewCommentModal, setNewCommentModal] = useState(false);
   const [openNewTreatmentModal, setNewTreatmentModal] = useState(false);
   const [openNewTestModal, setNewTestModal] = useState(false);
+  const [openPrescribeDrugsModal, setPrescribeDrugsModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTableLoading, setTableIsLoading] = useState(false);
   const [labs, setLabs] = useState([]);
   const [lab, setLab] = useState("");
+  const [pharmacies, setPharmacies] = useState([]);
+  const [pharmacy, setPharmacy] = useState("");
   const [hospitals, setHospitals] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [hospital, setHospital] = useState("");
@@ -37,11 +46,35 @@ const PatientReports = () => {
   const [title, setTitle] = useState("");
   const [reportId, setReportId] = useState("");
   const [refDocId, setRefDocID] = useState("");
+  const [image, setImage] = useState(null);
+  // const [hash, setHash] = useState(null);
 
   useEffect(() => {
     getAllReportFunc();
     // eslint-disable-next-line
   }, []);
+
+  const handleImageChange = (event) => {
+    setImage(event.target.files[0]);
+  };
+
+  const handleUpload = async () => {
+    try {
+      const file = image;
+      const filesArray = [file];
+      const results = await Promise.all(
+        filesArray.map(async (file) => {
+          return await ipfs.add(file);
+        })
+      );
+      const cid = results[0].cid.toString();
+
+      // setHash(cid.toString());
+      return cid.toString();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const getAllHospitals = async () => {
     const data = await getAllHospital();
@@ -51,6 +84,11 @@ const PatientReports = () => {
   const getAllLabsFunc = async () => {
     const data = await getAllLab();
     setLabs(data);
+  };
+
+  const getAllPharmaciesFunc = async () => {
+    const data = await getAllPharmacies();
+    setPharmacies(data);
   };
 
   const getAllDoctorsFunc = async () => {
@@ -73,6 +111,7 @@ const PatientReports = () => {
     setReports(data);
     getAllHospitals();
     getAllLabsFunc();
+    getAllPharmaciesFunc();
     getAllDoctorsFunc();
     setTableIsLoading(false);
   };
@@ -178,7 +217,15 @@ const PatientReports = () => {
           >
             Add Test
           </Tag>
-          <Tag color="yellow-inverse" className="text-black cursor-pointer">
+          <Tag
+            color="yellow-inverse"
+            className="text-black cursor-pointer"
+            onClick={() => {
+              setReportId(report_id);
+              setRefDocID(record.doctor_id);
+              setPrescribeDrugsModal(true);
+            }}
+          >
             Add Drugs
           </Tag>
         </div>
@@ -271,6 +318,34 @@ const PatientReports = () => {
         setTestName("");
         setLab("");
         setNewTestModal(false);
+        window.location.reload();
+      } else {
+        setIsLoading(false);
+      }
+    } else {
+      swal({
+        text: "Please provide required data!",
+        icon: "error",
+        type: "error",
+        dangerMode: true,
+        title: "Validation Error",
+      });
+    }
+  };
+
+  const submitDrug = async () => {
+    if (pharmacy !== "" && image !== "") {
+      setIsLoading(true);
+      const hash = await handleUpload();
+      console.log(hash);
+      const res = await newDrugToReport(reportId, refDocId, pharmacy, hash);
+      if (res) {
+        setIsLoading(false);
+        setReportId("");
+        setRefDocID("");
+        setPharmacy("");
+        setImage(null);
+        setPrescribeDrugsModal(false);
         window.location.reload();
       } else {
         setIsLoading(false);
@@ -644,6 +719,127 @@ const PatientReports = () => {
                     <button
                       type="button"
                       onClick={() => setNewTestModal(false)}
+                      className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+      </Modal>
+
+      <Modal
+        style={{
+          top: 20,
+        }}
+        open={openPrescribeDrugsModal}
+        footer={null}
+        closeIcon={<p></p>}
+      >
+        <main id="content" role="main" className="w-full max-w-md mx-auto p-6">
+          <div className="mt-7 bg-white  rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700">
+            <div className="p-4 sm:p-7">
+              <div className="text-center">
+                <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
+                  Prescribe drugs to report
+                </h1>
+              </div>
+
+              <div className="mt-15 mb-15">
+                <form>
+                  <div className="grid gap-y-4">
+                    <div>
+                      <label
+                        for="hospital"
+                        className="block text-sm font-bold ml-1 mb-2 dark:text-white"
+                      >
+                        Select the pharmacy
+                      </label>
+                      <div className="relative">
+                        <Select
+                          placeholder=""
+                          value={pharmacy}
+                          onChange={(value) => {
+                            setPharmacy(value);
+                          }}
+                          style={{
+                            width: "100%",
+                          }}
+                          options={pharmacies.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                          }))}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-center w-full">
+                      <label
+                        for="dropzone-file"
+                        className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          {image === null ? (
+                            <>
+                              <svg
+                                aria-hidden="true"
+                                className="w-10 h-10 mb-3 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                ></path>
+                              </svg>
+                              <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="font-semibold">
+                                  Upload Drugs Prescription Note
+                                </span>{" "}
+                              </p>
+                            </>
+                          ) : (
+                            <img
+                              alt="preview image"
+                              className="p-20"
+                              src={URL.createObjectURL(image)}
+                            />
+                          )}
+                        </div>
+
+                        <input
+                          id="dropzone-file"
+                          type="file"
+                          className="hidden"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={submitDrug}
+                      className={
+                        !isLoading
+                          ? "py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+                          : "py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-white text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+                      }
+                    >
+                      {isLoading ? <Spin size="large" /> : "Submit"}
+                      {/* submit */}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPrescribeDrugsModal(false)}
                       className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
                     >
                       Cancel

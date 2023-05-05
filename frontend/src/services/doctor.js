@@ -195,6 +195,59 @@ export const newTestToReport = (report_id, ref_doctor, name, labID) => {
   });
 };
 
+export const newDrugToReport = (
+  report_id,
+  ref_doctor,
+  pharamacyID,
+  Drugs_note_media
+) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(
+        "http://localhost:4000/doctor/report/presdrugs",
+        {
+          clientId: localStorage.getItem("health-user-id"),
+          patient_id: localStorage
+            .getItem("health-user-id")
+            .split("patient-")[1],
+          reportID: report_id,
+          refDoctor: ref_doctor,
+          pharamacyID: pharamacyID,
+          Drugs_note_media: Drugs_note_media,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.message) {
+          swal({
+            text: res.data.message.toUpperCase(),
+            title: "Successfully done!",
+            position: "center",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          resolve(res.data.message);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
 export const getAllDoctors = () => {
   return new Promise((resolve, reject) => {
     axios
