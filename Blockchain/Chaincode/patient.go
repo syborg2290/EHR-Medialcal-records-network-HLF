@@ -159,7 +159,7 @@ func (c *Chaincode) GetTest(ctx CustomTransactionContextInterface, key, requeste
 
 func (c *Chaincode) GetTestByID(ctx CustomTransactionContextInterface, testID string) (*Test, error) {
 	// Create a new query string to get the TESTS document for the given reportID
-	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "test_id": "%s"}}`, TESTS, testID)
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "test_id": "%s"}}`, TESTS, testID)
 
 	// Create a new query iterator using the query string
 	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
@@ -223,6 +223,30 @@ func (c *Chaincode) GetTestsByPatientID(ctx CustomTransactionContextInterface, p
 	return tests, nil
 }
 
+func (c *Chaincode) UpdateReportComment(ctx CustomTransactionContextInterface, reportID, commentID, newComment string) (bool, error) {
+	// Get the report with the given ID
+	report, err := c.GetReportByID(ctx, reportID)
+	if err != nil {
+		return false, fmt.Errorf("failed to get report: %v", err)
+	}
+
+	report.Comments[commentID] = newComment
+
+	// Serialize the updated report document
+	reportJSON, err := json.Marshal(report)
+	if err != nil {
+		return false, fmt.Errorf("failed to serialize report: %v", err)
+	}
+
+	// Put the updated report document back into the ledger
+	err = ctx.GetStub().PutState(report.DocTyp+report.ID, reportJSON)
+	if err != nil {
+		return false, fmt.Errorf("failed to update report: %v", err)
+	}
+
+	return true, nil
+}
+
 func (c *Chaincode) GetReport(ctx CustomTransactionContextInterface, key, requester string) (Report, error) {
 	existing, err := ctx.GetStub().GetState(key)
 	if err != nil {
@@ -246,7 +270,7 @@ func (c *Chaincode) GetReport(ctx CustomTransactionContextInterface, key, reques
 
 func (c *Chaincode) GetReportByID(ctx CustomTransactionContextInterface, reportID string) (*Report, error) {
 	// Create a new query string to get the REPORT document for the given reportID
-	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "report_id": "%s"}}`, REPORT, reportID)
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "report_id": "%s"}}`, REPORT, reportID)
 
 	// Create a new query iterator using the query string
 	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
@@ -333,7 +357,7 @@ func (c *Chaincode) GetTreatment(ctx CustomTransactionContextInterface, key, req
 
 func (c *Chaincode) GetTreatmentByID(ctx CustomTransactionContextInterface, treatmentID string) (*Treatment, error) {
 	// Create a new query string to get the TESTS document for the given reportID
-	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "treatment_id": "%s"}}`, TREATMENT, treatmentID)
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "treatment_id": "%s"}}`, TREATMENT, treatmentID)
 
 	// Create a new query iterator using the query string
 	queryResults, err := ctx.GetStub().GetQueryResult(queryString)
@@ -415,7 +439,7 @@ func (c *Chaincode) GetDrugs(ctx CustomTransactionContextInterface, key, request
 
 func (c *Chaincode) GetDrugByID(ctx CustomTransactionContextInterface, drugID string) (*Drugs, error) {
 	// Create a new query string to get the TESTS document for the given reportID
-	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "drugs_id": "%s"}}`, DRUGS, drugID)
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "drugs_id": "%s"}}`, DRUGS, drugID)
 
 	// Create a new query iterator using the query string
 	queryResults, err := ctx.GetStub().GetQueryResult(queryString)

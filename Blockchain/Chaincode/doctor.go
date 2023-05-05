@@ -28,14 +28,14 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, patientID, re
 	// 	return "", Errorf("Report with ID %v doesn't exists", reportID)
 	// }
 
-	var report Report
-	json.Unmarshal(ctx.GetData(), &report)
+	// var report Report
+	// json.Unmarshal(ctx.GetData(), &report)
 	// if report.Doctor != doc from certs {
 	// 	return Errorf("Cannot prescribe drug from the patient")
 	// }
-	if ok := c.checkConsent(ctx, report.PatientID, refDoctor); !ok {
-		return "", Errorf("No consent from the patient")
-	}
+	// if ok := c.checkConsent(ctx, report.PatientID, refDoctor); !ok {
+	// 	return "", Errorf("No consent from the patient")
+	// }
 
 	id := TESTS + getSafeRandomString(ctx.GetStub())
 	test := Test{
@@ -62,14 +62,14 @@ func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, patientI
 	// 	return "", Errorf("Report with ID %v doesn't exists", reportID)
 	// }
 
-	var report Report
-	json.Unmarshal(ctx.GetData(), &report)
+	// var report Report
+	// json.Unmarshal(ctx.GetData(), &report)
 	// if report.Doctor != doc from certs {
 	// 	return Errorf("Cannot prescribe drug from the patient")
 	// }
-	if ok := c.checkConsent(ctx, report.PatientID, refDoctor); !ok {
-		return "", Errorf("No consent from the patient")
-	}
+	// if ok := c.checkConsent(ctx, report.PatientID, refDoctor); !ok {
+	// 	return "", Errorf("No consent from the patient")
+	// }
 	id := TREATMENT + getSafeRandomString(ctx.GetStub())
 	treatment := Treatment{
 		DocTyp:            TREATMENT,
@@ -94,11 +94,11 @@ func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, patien
 	// 	return "", Errorf("Report with ID %v doesn't exists", reportID)
 	// }
 
-	var report Report
-	json.Unmarshal(ctx.GetData(), &report)
-	if ok := c.checkConsent(ctx, report.PatientID, refDoctor); !ok {
-		return "", Errorf("No consent from the patient")
-	}
+	// var report Report
+	// json.Unmarshal(ctx.GetData(), &report)
+	// if ok := c.checkConsent(ctx, report.PatientID, refDoctor); !ok {
+	// 	return "", Errorf("No consent from the patient")
+	// }
 	id := DRUGS + getSafeRandomString(ctx.GetStub())
 	drugs := Drugs{
 		DocTyp:      DRUGS,
@@ -126,9 +126,9 @@ func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, patien
 }
 
 func (c *Chaincode) AddCommentsToReport(ctx CustomTransactionContextInterface, reportID, comment, refDoctor string) error {
-	if ctx.GetData() == nil {
-		return Errorf("Report with ID %v doesn't exists", reportID)
-	}
+	// if ctx.GetData() == nil {
+	// 	return Errorf("Report with ID %v doesn't exists", reportID)
+	// }
 
 	var report Report
 	json.Unmarshal(ctx.GetData(), &report)
@@ -274,7 +274,7 @@ func (s *Chaincode) GetAllDoctors(ctx CustomTransactionContextInterface) ([]*Doc
 
 func (c *Chaincode) GetDoctorByID(ctx CustomTransactionContextInterface, doctorID string) (*Doctor, error) {
 	// Create a new query string to get the DOCTOR document for the given reportID
-	queryString := fmt.Sprintf(`{"selector":{"docType":"%s", "id": "%s"}}`, DOCTOR, doctorID)
+	queryString := fmt.Sprintf(`{"selector":{"docTyp":"%s", "id": "%s"}}`, DOCTOR, doctorID)
 
 	// Create a new query iterator using the query string
 	queryResults, err := ctx.GetStub().GetQueryResult(queryString)

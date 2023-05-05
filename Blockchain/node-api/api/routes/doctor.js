@@ -8,19 +8,20 @@ routes.put("/report/addcomment", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
-    [
-      "AddCommentsToReport",
-      req.body.report_id,
-      req.body.comment,
-      req.body.ref_doctor,
-    ],
+    ["UpdateReportComment", req.body.report_id, "0", req.body.comment],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
       } else {
-        res.status(200).json({
-          message: `Successfuly added comment to report ${req.body.report_id}`,
-        });
+        if (payload) {
+          res.status(200).json({
+            message: `Successfuly added comment to report ${req.body.report_id}`,
+          });
+        } else {
+          res.status(400).json({
+            message: `Something went wrong!`,
+          });
+        }
       }
     }
   );

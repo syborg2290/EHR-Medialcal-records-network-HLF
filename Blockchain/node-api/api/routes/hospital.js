@@ -115,7 +115,7 @@ routes.get("/hospital", (req, res) => {
       if (err) {
         res.status(500).json(err);
       } else {
-        const hospital = JSON.parse(payload.toString());
+        const hospital = JSON.parse(payload);
         res.status(200).json(hospital);
       }
     }
