@@ -17,12 +17,9 @@ import {
 import { getAllPatientReports } from "../../services/patient";
 import { getAllLab } from "../../services/lab";
 import { getAllPharmacies } from "../../services/pharmacy";
-import { create as ipfsHttpClient } from "ipfs-http-client";
+import Moralis from "moralis";
 
 const PatientReports = () => {
-  const ipfs = ipfsHttpClient({
-    url: "https://ipfs.infura.io:5001/api/v0",
-  });
   const [Reports, setReports] = useState([]);
   const [filteredReport, setFilteredReport] = useState([]);
   const [openPatientModal, setOpenPatientModal] = useState(false);
@@ -60,17 +57,31 @@ const PatientReports = () => {
 
   const handleUpload = async () => {
     try {
-      const file = image;
-      const filesArray = [file];
-      const results = await Promise.all(
-        filesArray.map(async (file) => {
-          return await ipfs.add(file);
-        })
-      );
-      const cid = results[0].cid.toString();
+      await Moralis.start({
+        apiKey: process.env.REACT_APP_MORALIS_API_KEY,
 
-      // setHash(cid.toString());
-      return cid.toString();
+        // ...and any other configuration
+      });
+
+      let promise = new Promise(function (resolve, reject) {
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = async () => {
+          const base64String = reader.result.split(",")[1];
+          const abi = [
+            {
+              path: reportId + image.name,
+              content: base64String,
+            },
+          ];
+
+          const response = await Moralis.EvmApi.ipfs.uploadFolder({ abi });
+
+          resolve(response.toJSON()[0].path);
+        };
+      });
+
+      return promise;
     } catch (error) {
       console.error(error);
     }
@@ -336,20 +347,22 @@ const PatientReports = () => {
   const submitDrug = async () => {
     if (pharmacy !== "" && image !== "") {
       setIsLoading(true);
-      const hash = await handleUpload();
-      console.log(hash);
-      const res = await newDrugToReport(reportId, refDocId, pharmacy, hash);
-      if (res) {
-        setIsLoading(false);
-        setReportId("");
-        setRefDocID("");
-        setPharmacy("");
-        setImage(null);
-        setPrescribeDrugsModal(false);
-        window.location.reload();
-      } else {
-        setIsLoading(false);
-      }
+      handleUpload().then(async (url) => {
+        if (url) {
+          const res = await newDrugToReport(reportId, refDocId, pharmacy, url);
+          if (res) {
+            setIsLoading(false);
+            setReportId("");
+            setRefDocID("");
+            setPharmacy("");
+            setImage(null);
+            setPrescribeDrugsModal(false);
+            window.location.reload();
+          } else {
+            setIsLoading(false);
+          }
+        }
+      });
     } else {
       swal({
         text: "Please provide required data!",
@@ -807,7 +820,7 @@ const PatientReports = () => {
                             </>
                           ) : (
                             <img
-                              alt="preview image"
+                              alt=""
                               className="p-20"
                               src={URL.createObjectURL(image)}
                             />

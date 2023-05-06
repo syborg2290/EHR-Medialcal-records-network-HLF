@@ -195,12 +195,7 @@ export const newTestToReport = (report_id, ref_doctor, name, labID) => {
   });
 };
 
-export const newDrugToReport = (
-  report_id,
-  ref_doctor,
-  pharamacyID,
-  Drugs_note_media
-) => {
+export const newDrugToReport = (report_id, ref_doctor, pharamacyID, url) => {
   return new Promise((resolve, reject) => {
     axios
       .post(
@@ -213,7 +208,7 @@ export const newDrugToReport = (
           reportID: report_id,
           refDoctor: ref_doctor,
           pharamacyID: pharamacyID,
-          Drugs_note_media: Drugs_note_media,
+          drugs_note_media: url,
         },
         {
           headers: {
