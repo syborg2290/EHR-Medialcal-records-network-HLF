@@ -15,6 +15,9 @@ import PatientTests from "./pages/Patient/PatientTests";
 import PatientDrugs from "./pages/Patient/PatientDrugs";
 import PatientReports from "./pages/Patient/PatientReports";
 
+import * as dotenv from "dotenv";
+dotenv.config();
+
 function App() {
   const isUserAuthenticated = () => {
     if (localStorage.getItem("health-user-type")) {

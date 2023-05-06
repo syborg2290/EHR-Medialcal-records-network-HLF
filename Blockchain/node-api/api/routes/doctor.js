@@ -77,24 +77,24 @@ routes.post("/report/reftreatment", (req, res) => {
 });
 
 routes.post("/report/presdrugs", (req, res) => {
+  console.log(req.body);
   contract(
     req.body.clientId,
     "INVOKE",
     [
       "PrescribeDrugs",
       req.body.patient_id,
+      req.body.reportID,
+      req.body.refDoctor,
       req.body.pharamacyID,
-      req.body.report_id,
-      req.body.ref_doctor,
-      req.body.drugs,
-      req.body.doses,
+      req.body.drugs_note_media,
     ],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
       } else {
         res.status(200).json({
-          message: `Successfuly prescribe drugs`,
+          message: `Successfuly prescribed drugs`,
           drug_id: payload.toString(),
         });
       }

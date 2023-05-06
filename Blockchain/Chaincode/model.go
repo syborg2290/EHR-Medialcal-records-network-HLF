@@ -82,18 +82,15 @@ type Report struct {
 
 // Drugs model
 type Drugs struct {
-	DocTyp      string            `json:"docTyp"`
-	ReportID    string            `json:"report_id"`
-	PatientID   string            `json:"patient_id"`
-	PharamacyID string            `json:"pharmacy_id"`
-	ID          string            `json:"drugs_id"`
-	For         string            `json:"patient__id"`
-	RefDoctor   string            `json:"ref_doctor"`
-	Drug        map[string]string `josn:"drug"`   // name of drug mapped to doses
-	Status      int               `json:"status"` // 0 - requested 1-  given
-	Pending     map[string]string // name of ignored drugs mapped to when will that be 	available
-	CreateTime  int64             `json:"create_time"`
-	UpdateTime  int64             `josn:"updated_time"`
+	DocTyp           string `json:"docTyp"`
+	ReportID         string `json:"report_id"`
+	PatientID        string `json:"patient_id"`
+	PharamacyID      string `json:"pharmacy_id"`
+	ID               string `json:"drugs_id"`
+	RefDoctor        string `json:"ref_doctor"`
+	Drugs_note_media string `josn:"drug"`
+	CreateTime       int64  `json:"create_time"`
+	UpdateTime       int64  `josn:"updated_time"`
 }
 
 // Test model file

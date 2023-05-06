@@ -421,21 +421,21 @@ func (c *Chaincode) GetTreatmentsByPatientID(ctx CustomTransactionContextInterfa
 	return treatments, nil
 }
 
-func (c *Chaincode) GetDrugs(ctx CustomTransactionContextInterface, key, requester string) (Drugs, error) {
-	existing := ctx.GetData()
-	if existing == nil {
-		return Drugs{}, Errorf("Drugs with ID %v does not exist", key)
-	}
-	var drugs Drugs
-	err := json.Unmarshal(existing, &drugs)
-	if err != nil {
-		return Drugs{}, Errorf("Error unmarshalling drugs data for ID %v: %v", key, err)
-	}
-	if ok := c.checkConsent(ctx, drugs.For, requester); !ok {
-		return Drugs{}, Errorf("Please get consent form the Patient")
-	}
-	return drugs, nil
-}
+// func (c *Chaincode) GetDrugs(ctx CustomTransactionContextInterface, key, requester string) (Drugs, error) {
+// 	existing := ctx.GetData()
+// 	if existing == nil {
+// 		return Drugs{}, Errorf("Drugs with ID %v does not exist", key)
+// 	}
+// 	var drugs Drugs
+// 	err := json.Unmarshal(existing, &drugs)
+// 	if err != nil {
+// 		return Drugs{}, Errorf("Error unmarshalling drugs data for ID %v: %v", key, err)
+// 	}
+// 	if ok := c.checkConsent(ctx, drugs.For, requester); !ok {
+// 		return Drugs{}, Errorf("Please get consent form the Patient")
+// 	}
+// 	return drugs, nil
+// }
 
 func (c *Chaincode) GetDrugByID(ctx CustomTransactionContextInterface, drugID string) (*Drugs, error) {
 	// Create a new query string to get the TESTS document for the given reportID

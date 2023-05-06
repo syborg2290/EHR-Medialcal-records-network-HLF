@@ -57,6 +57,7 @@ func (c *Chaincode) RefTest(ctx CustomTransactionContextInterface, patientID, re
 	testAsByte, _ := json.Marshal((test))
 	return test.ID, ctx.GetStub().PutState(id, testAsByte)
 }
+
 func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, patientID, reportID, refDoctor, name string) (string, error) {
 	// if ctx.GetData() == nil {
 	// 	return "", Errorf("Report with ID %v doesn't exists", reportID)
@@ -89,40 +90,22 @@ func (c *Chaincode) RefTreatment(ctx CustomTransactionContextInterface, patientI
 	return treatment.ID, ctx.GetStub().PutState(treatment.ID, treatmentAsByte)
 }
 
-func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, patientID, pharamacyID, reportID, refDoctor string, drug, doses []string) (string, error) {
-	// if ctx.GetData() == nil {
-	// 	return "", Errorf("Report with ID %v doesn't exists", reportID)
-	// }
+func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, patientID, reportID, refDoctor, pharamacyID, Drugs_note_media string) (string, error) {
 
-	// var report Report
-	// json.Unmarshal(ctx.GetData(), &report)
-	// if ok := c.checkConsent(ctx, report.PatientID, refDoctor); !ok {
-	// 	return "", Errorf("No consent from the patient")
-	// }
 	id := DRUGS + getSafeRandomString(ctx.GetStub())
 	drugs := Drugs{
-		DocTyp:      DRUGS,
-		ReportID:    reportID,
-		PatientID:   patientID,
-		PharamacyID: pharamacyID,
-		ID:          id,
-		RefDoctor:   refDoctor,
-		Drug:        make(map[string]string),
-		Status:      0,
-		Pending:     make(map[string]string),
-		CreateTime:  time.Now().Unix(),
-		UpdateTime:  time.Now().Unix(),
-	}
-	if len(drug) != len(doses) {
-		return "", Errorf("Error: Missmatch with length of drug and doses")
-	}
-	for i, d := range drug {
-		drugs.Drug[d] = doses[i]
-		drugs.Pending[d] = "init"
+		DocTyp:           DRUGS,
+		ReportID:         reportID,
+		PatientID:        id,
+		PharamacyID:      pharamacyID,
+		ID:               id,
+		RefDoctor:        refDoctor,
+		Drugs_note_media: Drugs_note_media,
+		CreateTime:       time.Now().Unix(),
+		UpdateTime:       time.Now().Unix(),
 	}
 	drugsAsByte, _ := json.Marshal(drugs)
-
-	return drugs.ID, ctx.GetStub().PutState(id, drugsAsByte)
+	return drugs.ID, ctx.GetStub().PutState(drugs.ID, drugsAsByte)
 }
 
 func (c *Chaincode) AddCommentsToReport(ctx CustomTransactionContextInterface, reportID, comment, refDoctor string) error {
