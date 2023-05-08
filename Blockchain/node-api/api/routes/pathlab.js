@@ -85,7 +85,7 @@ routes.get("/labs-count", (req, res) => {
 });
 
 routes.get("/lab", (req, res) => {
-  const labID = req.headers.labID;
+  const labID = req.headers.labid;
   contract(
     req.query.clientId,
     "QUERY",

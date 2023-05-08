@@ -56,6 +56,49 @@ export const newDoctor = (
   });
 };
 
+export const updateTestResult = (test_id, result) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .put(
+        "http://localhost:4000/doctor/test/UpdateResultTest",
+        {
+          clientId: localStorage.getItem("health-user-id"),
+          testID: test_id,
+          result: result,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("health-user-privatekey"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.message) {
+          swal({
+            text: res.data.message.toUpperCase(),
+            title: "Successfully done!",
+            position: "center",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          resolve(res.data.message);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.data && err.response.data.message) {
+          swal({
+            text: err.response.data.message.toUpperCase(),
+            icon: "error",
+            type: "error",
+            dangerMode: true,
+            title: "Oops, try again!",
+          });
+        }
+      });
+  });
+};
+
 export const newCommentToReport = (report_id, comment) => {
   return new Promise((resolve, reject) => {
     axios

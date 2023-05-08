@@ -8,6 +8,8 @@ const PatientDrugs = () => {
   const [Drugs, setDrugs] = useState([]);
   const [filteredDrugs, setFilteredDrugs] = useState([]);
   const [isTableLoading, setTableIsLoading] = useState(false);
+  const [openNoteModal, setOpenNoteModal] = useState(false);
+  const [noteUrl, setNoteUrl] = useState("");
 
   useEffect(() => {
     getAllDrugsFunc();
@@ -24,7 +26,7 @@ const PatientDrugs = () => {
       data[i].doctor_name = doctorName;
       data[i].pharmacy_name = pharmacyName;
     }
-    console.log(data);
+
     setDrugs(data);
   };
 
@@ -55,8 +57,16 @@ const PatientDrugs = () => {
       title: "Drug Note",
       dataIndex: "drugs_id",
       key: "drugs_id",
-      render: (_, { drugs_id }) => (
-        <Tag color="green" key={drugs_id} className="cursor-pointer hover:animate-pulse p-1">
+      render: (drugs_id, record) => (
+        <Tag
+          color="green"
+          key={record.drugs_id}
+          className="cursor-pointer hover:animate-pulse p-1"
+          onClick={() => {
+            setNoteUrl(record.Drugs_note_media);
+            setOpenNoteModal(true);
+          }}
+        >
           View Note
         </Tag>
       ),
@@ -75,6 +85,39 @@ const PatientDrugs = () => {
 
   return (
     <>
+      <Modal
+        style={{
+          top: 20,
+        }}
+        open={openNoteModal}
+        footer={null}
+        closeIcon={<p></p>}
+      >
+        <main id="content" role="main" className="w-full max-w-md mx-auto p-6">
+          <div className="mt-7 bg-white  rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700">
+            <div className="p-4 sm:p-7">
+              <div className="text-center">
+                <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
+                  Prescription Note
+                </h1>
+              </div>
+
+              <div className="mt-15 mb-15">
+                <img src={noteUrl} alt="note" className="m-1" />
+
+                <button
+                  type="button"
+                  onClick={() => setOpenNoteModal(false)}
+                  className="w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </Modal>
+
       {/*  */}
       <div>
         <div className="pt-2 relative mx-auto text-gray-600 mt-10">

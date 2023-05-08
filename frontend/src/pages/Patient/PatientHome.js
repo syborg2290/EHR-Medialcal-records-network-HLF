@@ -173,11 +173,18 @@ const PatientHome = () => {
                 </div>
               </div>
 
-              <div className="p-1">
+              <div className="pt-1 pl-1 pr-1 pb-1">
                 <h1 className="opacity-50 text-bold text-lg">
                   Patient Health Condition
                 </h1>
                 <Bubble options={options} data={data} />;
+              </div>
+
+              <div className="pt-10 pb-5 place-items-center place-content-center">
+                <button className="group rounded-2xl h-12 w-48 bg-orange-600 font-bold text-sm text-white relative overflow-hidden">
+                  Virtual Lab
+                  <div className="absolute duration-300 inset-0 w-full h-full transition-all scale-0 group-hover:scale-100 group-hover:bg-white/30 rounded-2xl"></div>
+                </button>
               </div>
             </div>
           </div>

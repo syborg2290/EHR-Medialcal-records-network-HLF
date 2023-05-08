@@ -439,6 +439,7 @@ func (c *Chaincode) UpdateResultTest(ctx CustomTransactionContextInterface, test
 	}
 
 	test.Result = result
+	test.Status = 1
 
 	// Serialize the updated test document
 	testJSON, err := json.Marshal(test)

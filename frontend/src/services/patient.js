@@ -161,7 +161,7 @@ export const getAllPatientReports = () => {
         {
           headers: {
             Authorization: localStorage.getItem("health-user-privatekey"),
-            "patientId": localStorage
+            patientId: localStorage
               .getItem("health-user-id")
               .split("patient-")[1],
           },
@@ -198,7 +198,7 @@ export const getAllPatientTests = () => {
         {
           headers: {
             Authorization: localStorage.getItem("health-user-privatekey"),
-            "patientId": localStorage
+            patientId: localStorage
               .getItem("health-user-id")
               .split("patient-")[1],
           },
@@ -235,7 +235,7 @@ export const getAllPatientTreatments = () => {
         {
           headers: {
             Authorization: localStorage.getItem("health-user-privatekey"),
-            "patientId": localStorage
+            patientId: localStorage
               .getItem("health-user-id")
               .split("patient-")[1],
           },
@@ -272,7 +272,7 @@ export const getAllPatientDrugs = () => {
         {
           headers: {
             Authorization: localStorage.getItem("health-user-privatekey"),
-            "patientId": localStorage
+            patientId: localStorage
               .getItem("health-user-id")
               .split("patient-")[1],
           },
