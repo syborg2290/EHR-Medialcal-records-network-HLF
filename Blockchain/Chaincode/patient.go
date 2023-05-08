@@ -334,6 +334,127 @@ func (c *Chaincode) GetReportsByPatientID(ctx CustomTransactionContextInterface,
 	return reports, nil
 }
 
+func (c *Chaincode) UpdateTreatmentStatus(ctx CustomTransactionContextInterface, treatmentID, commentID, newComment string, status int) (bool, error) {
+	// Get the treatment with the given ID
+	treatment, err := c.GetTreatmentByID(ctx, treatmentID)
+	if err != nil {
+		return false, fmt.Errorf("failed to get treatment: %v", err)
+	}
+
+	treatment.Comments[commentID] = newComment
+	treatment.Status = status
+
+	// Serialize the updated treatment document
+	treatmentJSON, err := json.Marshal(treatment)
+	if err != nil {
+		return false, fmt.Errorf("failed to serialize treatment: %v", err)
+	}
+
+	// Put the updated treatment document back into the ledger
+	err = ctx.GetStub().PutState(treatment.DocTyp+treatment.ID, treatmentJSON)
+	if err != nil {
+		return false, fmt.Errorf("failed to update treatment: %v", err)
+	}
+
+	return true, nil
+}
+
+func (c *Chaincode) UpdateMediaFilesTreatment(ctx CustomTransactionContextInterface, treatmentID string, media_no string, mediaFileLocation string) (bool, error) {
+	// Get the treatment with the given ID
+	treatment, err := c.GetTreatmentByID(ctx, treatmentID)
+	if err != nil {
+		return false, fmt.Errorf("failed to get treatment: %v", err)
+	}
+
+	treatment.medias[media_no] = mediaFileLocation
+
+	// Serialize the updated treatment document
+	treatmentJSON, err := json.Marshal(treatment)
+	if err != nil {
+		return false, fmt.Errorf("failed to serialize treatment: %v", err)
+	}
+
+	// Put the updated treatment document back into the ledger
+	err = ctx.GetStub().PutState(treatment.DocTyp+treatment.ID, treatmentJSON)
+	if err != nil {
+		return false, fmt.Errorf("failed to update treatment: %v", err)
+	}
+
+	return true, nil
+}
+
+func (c *Chaincode) UpdateMediaFilesTest(ctx CustomTransactionContextInterface, testID string, media_no int, mediaFileLocation string) (bool, error) {
+	// Get the test with the given ID
+	test, err := c.GetTestByID(ctx, testID)
+	if err != nil {
+		return false, fmt.Errorf("failed to get test: %v", err)
+	}
+
+	test.MediaFileLocation = append(test.MediaFileLocation, mediaFileLocation)
+
+	// Serialize the updated test document
+	testJSON, err := json.Marshal(test)
+	if err != nil {
+		return false, fmt.Errorf("failed to serialize test: %v", err)
+	}
+
+	// Put the updated test document back into the ledger
+	err = ctx.GetStub().PutState(test.DocTyp+test.ID, testJSON)
+	if err != nil {
+		return false, fmt.Errorf("failed to update test: %v", err)
+	}
+
+	return true, nil
+}
+
+func (c *Chaincode) UpdateStatusTest(ctx CustomTransactionContextInterface, testID string, status int) (bool, error) {
+	// Get the test with the given ID
+	test, err := c.GetTestByID(ctx, testID)
+	if err != nil {
+		return false, fmt.Errorf("failed to get test: %v", err)
+	}
+
+	test.Status = status
+
+	// Serialize the updated test document
+	testJSON, err := json.Marshal(test)
+	if err != nil {
+		return false, fmt.Errorf("failed to serialize test: %v", err)
+	}
+
+	// Put the updated test document back into the ledger
+	err = ctx.GetStub().PutState(test.DocTyp+test.ID, testJSON)
+	if err != nil {
+		return false, fmt.Errorf("failed to update test: %v", err)
+	}
+
+	return true, nil
+}
+
+func (c *Chaincode) UpdateResultTest(ctx CustomTransactionContextInterface, testID, result string) (bool, error) {
+	// Get the test with the given ID
+	test, err := c.GetTestByID(ctx, testID)
+	if err != nil {
+		return false, fmt.Errorf("failed to get test: %v", err)
+	}
+
+	test.Result = result
+
+	// Serialize the updated test document
+	testJSON, err := json.Marshal(test)
+	if err != nil {
+		return false, fmt.Errorf("failed to serialize test: %v", err)
+	}
+
+	// Put the updated test document back into the ledger
+	err = ctx.GetStub().PutState(test.DocTyp+test.ID, testJSON)
+	if err != nil {
+		return false, fmt.Errorf("failed to update test: %v", err)
+	}
+
+	return true, nil
+}
+
 func (c *Chaincode) GetTreatment(ctx CustomTransactionContextInterface, key, requester string) (Treatment, error) {
 	existing, err := ctx.GetStub().GetState(key)
 	if err != nil {

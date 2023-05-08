@@ -90,7 +90,7 @@ routes.get("/phramacies-count", (req, res) => {
 });
 
 routes.get("/pharmacy", (req, res) => {
-  const pharmacyID = req.headers.pharmacyID;
+  const pharmacyID = req.headers.pharmacyid;
   contract(
     req.query.clientId,
     "QUERY",

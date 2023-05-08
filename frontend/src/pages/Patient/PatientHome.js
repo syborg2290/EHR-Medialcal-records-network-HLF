@@ -69,7 +69,7 @@ const PatientHome = () => {
             <div
               className="flex flex-wrap -m-4 text-center"
               onClick={() => {
-                navigate("/patient-reports");
+                navigate("/patient-treatments");
               }}
             >
               <div className="p-4 lg:w-2/3 w-full hover:scale-105 duration-500">
@@ -91,7 +91,7 @@ const PatientHome = () => {
             <div
               className="flex flex-wrap -m-4 text-center cursor-pointer"
               onClick={() => {
-                navigate("/patient-reports");
+                navigate("/patient-tests");
               }}
             >
               <div className="p-4 lg:w-2/3 w-full hover:scale-105 duration-500">
@@ -113,7 +113,7 @@ const PatientHome = () => {
             <div
               className="flex flex-wrap -m-4 text-center cursor-pointer"
               onClick={() => {
-                navigate("/patient-reports");
+                navigate("/patient-drugs");
               }}
             >
               <div className="p-4  lg:w-2/3 w-full hover:scale-105 duration-500">

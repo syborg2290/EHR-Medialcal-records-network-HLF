@@ -95,20 +95,21 @@ type Drugs struct {
 
 // Test model file
 type Test struct {
-	DocTyp            string   `json:"docTyp"`
-	ReportID          string   `json:"report_id"`
-	ID                string   `json:"test_id"`
-	PatientID         string   `json:"patient_id"`
-	LabID             string   `json:"lab_id"`
-	MediaFileLocation []string `json:"media_file_location"`
-	Name              string   `json:"test_name"`
-	Supervisor        string   `json:"supervisor_details"` // this will name of supervisor, aadress , path Lab
-	RefDoctor         string   `json:"ref_doctor"`
-	Result            string   `json:"test_result"`
-	Status            int      `json:"status"`       // status of test 0 - not done 1 - done
-	TypeOfT           int      `json:"type_of_test"` // 0- normal 1-abnormal
-	CreateTime        int64    `json:"create_time"`
-	UpdateTime        int64    `josn:"updated_time"`
+	DocTyp            string            `json:"docTyp"`
+	ReportID          string            `json:"report_id"`
+	ID                string            `json:"test_id"`
+	PatientID         string            `json:"patient_id"`
+	LabID             string            `json:"lab_id"`
+	MediaFileLocation []string          `json:"media_file_location"`
+	medias            map[string]string `json:"medias"`
+	Name              string            `json:"test_name"`
+	Supervisor        string            `json:"supervisor_details"` // this will name of supervisor, aadress , path Lab
+	RefDoctor         string            `json:"ref_doctor"`
+	Result            string            `json:"test_result"`
+	Status            int               `json:"status"`       // status of test 0 - not done 1 - done
+	TypeOfT           int               `json:"type_of_test"` // 0- normal 1-abnormal
+	CreateTime        int64             `json:"create_time"`
+	UpdateTime        int64             `josn:"updated_time"`
 }
 
 // Treatment model
@@ -121,6 +122,7 @@ type Treatment struct {
 	RefDoctor         string            `json:"ref_doctor"`
 	Name              string            `josn:"treatment_name"`
 	MediaFileLocation []string          `josn:"media_file_location"`
+	medias            map[string]string `json:"medias"`
 	Comments          map[string]string `json:"comments"`
 	Status            int               // 0 not done 1 started 2  done 3 failed
 	CreateTime        int64             `json:"create_time"`

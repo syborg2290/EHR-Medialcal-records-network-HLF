@@ -102,22 +102,46 @@ routes.post("/report/presdrugs", (req, res) => {
   );
 });
 
-routes.put("/treatment/addcomment", (req, res) => {
+routes.put("/treatment/updateStatus", (req, res) => {
   contract(
     req.body.clientId,
     "INVOKE",
     [
-      "AddCommentsToTreatment",
+      "UpdateTreatmentStatus",
       req.body.treatment_id,
-      req.body.supervisor,
+      "0",
       req.body.comment,
+      req.body.status,
     ],
     (err, payload) => {
       if (err) {
         res.status(500).json(err);
       } else {
         res.status(200).json({
-          message: `Successfuly commented on treatment`,
+          message: `Successfuly updated the status on treatment`,
+        });
+      }
+    }
+  );
+});
+
+routes.put("/treatment/updateMediaFile", (req, res) => {
+  const mediaFileLocation = req.body.mediaFileLocation;
+  contract(
+    req.body.clientId,
+    "INVOKE",
+    [
+      "UpdateMediaFilesTreatment",
+      req.body.treatment_id,
+      req.body.media_no,
+      mediaFileLocation,
+    ],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        res.status(200).json({
+          message: `Successfuly updated the media files on treatment`,
         });
       }
     }
@@ -139,6 +163,62 @@ routes.put("/treatment/addmediafile", (req, res) => {
         res.status(500).json(err);
       } else {
         res.status(200).json(JSON.parse(payload));
+      }
+    }
+  );
+});
+
+routes.put("/test/updateMediaFile", (req, res) => {
+  contract(
+    req.body.clientId,
+    "INVOKE",
+    [
+      "UpdateMediaFilesTest",
+      req.body.testID,
+      req.body.media_no,
+      req.body.mediaFileLocation,
+    ],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        res.status(200).json({
+          message: `Successfuly updated the media files on test`,
+        });
+      }
+    }
+  );
+});
+
+routes.put("/test/UpdateStatusTest", (req, res) => {
+  contract(
+    req.body.clientId,
+    "INVOKE",
+    ["UpdateStatusTest", req.body.testID, req.body.status],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        res.status(200).json({
+          message: `Successfuly updated the status on test`,
+        });
+      }
+    }
+  );
+});
+
+routes.put("/test/UpdateResultTest", (req, res) => {
+  contract(
+    req.body.clientId,
+    "INVOKE",
+    ["UpdateResultTest", req.body.testID, req.body.result],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        res.status(200).json({
+          message: `Successfuly updated the result on test`,
+        });
       }
     }
   );

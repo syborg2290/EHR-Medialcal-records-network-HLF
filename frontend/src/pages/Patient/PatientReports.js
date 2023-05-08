@@ -198,7 +198,7 @@ const PatientReports = () => {
         <div>
           <Tag
             color="green"
-            className="cursor-pointer"
+            className="cursor-pointer hover:animate-pulse p-1"
             onClick={() => {
               setReportId(report_id);
               setNewCommentModal(true);
@@ -208,7 +208,7 @@ const PatientReports = () => {
           </Tag>
           <Tag
             color="blue"
-            className="cursor-pointer"
+            className="cursor-pointer hover:animate-pulse p-1"
             onClick={() => {
               setReportId(report_id);
               setRefDocID(record.doctor_id);
@@ -219,7 +219,7 @@ const PatientReports = () => {
           </Tag>
           <Tag
             color="red"
-            className="cursor-pointer"
+            className="cursor-pointer hover:animate-pulse p-1"
             onClick={() => {
               setReportId(report_id);
               setRefDocID(record.doctor_id);
@@ -230,7 +230,7 @@ const PatientReports = () => {
           </Tag>
           <Tag
             color="yellow-inverse"
-            className="text-black cursor-pointer"
+            className="text-black cursor-pointer hover:animate-pulse p-1"
             onClick={() => {
               setReportId(report_id);
               setRefDocID(record.doctor_id);

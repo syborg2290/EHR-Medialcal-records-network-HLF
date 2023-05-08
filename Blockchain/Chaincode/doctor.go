@@ -96,7 +96,7 @@ func (c *Chaincode) PrescribeDrugs(ctx CustomTransactionContextInterface, patien
 	drugs := Drugs{
 		DocTyp:           DRUGS,
 		ReportID:         reportID,
-		PatientID:        id,
+		PatientID:        patientID,
 		PharamacyID:      pharamacyID,
 		ID:               id,
 		RefDoctor:        refDoctor,
