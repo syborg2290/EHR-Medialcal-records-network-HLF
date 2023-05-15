@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
-import { Table, Tag, Modal, Spin } from "antd";
+import { Table, Tag, Modal, Spin, Select } from "antd";
 import { getLab } from "../../services/lab";
-import { getDoctor, updateTestResult } from "../../services/doctor";
+import {
+  getDoctor,
+  updateReportStatus,
+  updateTestResult,
+  updateTestStatus,
+} from "../../services/doctor";
 import { getAllPatientTests } from "../../services/patient";
 
 const PatientTests = () => {
@@ -13,6 +18,23 @@ const PatientTests = () => {
   const [openResultModal, setOpenResultModal] = useState(false);
   const [result, setResult] = useState("");
   const [testId, setTestId] = useState("");
+  const [reportId, setReportId] = useState("");
+  const [status, setStatus] = useState(0);
+
+  const statusList = [
+    {
+      id: 0,
+      name: "Pending",
+    },
+    {
+      id: 1,
+      name: "Positive",
+    },
+    {
+      id: 2,
+      name: "Negative",
+    },
+  ];
 
   useEffect(() => {
     getAllTestsFunc();
@@ -79,9 +101,13 @@ const PatientTests = () => {
           <Tag color="orange-inverse" key={status}>
             Pending
           </Tag>
-        ) : (
+        ) : status === 1 ? (
           <Tag color="green-inverse" key={status}>
-            Done
+            Positive
+          </Tag>
+        ) : (
+          <Tag color="red-inverse" key={status}>
+            Negative
           </Tag>
         ),
     },
@@ -96,6 +122,7 @@ const PatientTests = () => {
             className="cursor-pointer hover:animate-pulse p-1"
             onClick={() => {
               setTestId(test_id);
+              setReportId(record.report_id);
               setOpenResultModal(true);
             }}
           >
@@ -117,15 +144,29 @@ const PatientTests = () => {
   };
 
   const submitResult = async () => {
-    if (result !== "" && testId !== "") {
+    if (result !== "" && testId !== "" && reportId !== "") {
       setIsLoading(true);
-      const res = await updateTestResult(testId, result);
-      if (res) {
-        setIsLoading(false);
-        setTestId("");
-        setResult("");
-        setOpenResultModal(false);
-        window.location.reload();
+      const res1 = await updateTestResult(testId, result);
+      if (res1) {
+        const res2 = await updateTestStatus(testId, status);
+        if (res2) {
+          const res3 = await updateReportStatus(
+            reportId,
+            status === 0 ? "0" : status === 1 ? "1" : "2"
+          );
+          if (res3) {
+            setIsLoading(false);
+            setTestId("");
+            setReportId("");
+            setResult("");
+            setOpenResultModal(false);
+            window.location.reload();
+          } else {
+            setIsLoading(false);
+          }
+        } else {
+          setIsLoading(false);
+        }
       } else {
         setIsLoading(false);
       }
@@ -180,6 +221,31 @@ const PatientTests = () => {
                             setResult(e.target.value.trim());
                           }}
                           aria-describedby="title-error"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        for="treatment"
+                        className="block text-sm font-bold ml-1 mb-2 dark:text-white"
+                      >
+                        Update the status
+                      </label>
+                      <div className="relative">
+                        <Select
+                          placeholder=""
+                          value={status}
+                          onChange={(value) => {
+                            setStatus(value);
+                          }}
+                          style={{
+                            width: "100%",
+                          }}
+                          options={statusList.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                          }))}
                         />
                       </div>
                     </div>

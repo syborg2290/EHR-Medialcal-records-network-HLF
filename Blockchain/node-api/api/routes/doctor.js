@@ -27,6 +27,29 @@ routes.put("/report/addcomment", (req, res) => {
   );
 });
 
+routes.put("/report/updateStatus", (req, res) => {
+  contract(
+    req.body.clientId,
+    "INVOKE",
+    ["UpdateReportStatus", req.body.report_id, req.body.status],
+    (err, payload) => {
+      if (err) {
+        res.status(500).json(err);
+      } else {
+        if (payload) {
+          res.status(200).json({
+            message: `Successfuly update the status of report ${req.body.report_id}`,
+          });
+        } else {
+          res.status(400).json({
+            message: `Something went wrong!`,
+          });
+        }
+      }
+    }
+  );
+});
+
 routes.post("/report/reftest", (req, res) => {
   contract(
     req.body.clientId,

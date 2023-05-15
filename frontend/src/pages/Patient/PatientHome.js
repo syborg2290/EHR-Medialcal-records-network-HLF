@@ -9,6 +9,7 @@ import {
 } from "chart.js";
 import { Bubble } from "react-chartjs-2";
 import { getLoggedPatient } from "../../services/patient";
+import { getAllPatientReports } from "../../services/patient";
 const { faker } = require("@faker-js/faker");
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
@@ -21,40 +22,55 @@ export const options = {
   },
 };
 
-export const data = {
-  datasets: [
-    {
-      label: "Red dataset",
-      data: Array.from({ length: 50 }, () => ({
-        x: faker.datatype.number({ min: -100, max: 100 }),
-        y: faker.datatype.number({ min: -100, max: 100 }),
-        r: faker.datatype.number({ min: 5, max: 20 }),
-      })),
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Blue dataset",
-      data: Array.from({ length: 50 }, () => ({
-        x: faker.datatype.number({ min: -100, max: 100 }),
-        y: faker.datatype.number({ min: -100, max: 100 }),
-        r: faker.datatype.number({ min: 5, max: 20 }),
-      })),
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    },
-  ],
-};
-
 const PatientHome = () => {
   const navigate = useNavigate();
   const [patient, setPatient] = useState({});
+  const [negativeValue, setNegativeValue] = useState(0);
+  const [positiveValue, setPositiveValue] = useState(0);
 
   useEffect(() => {
     getPatientFunc();
+    getReports();
   }, []);
+
+  const data = {
+    datasets: [
+      {
+        label: "Negative Reports",
+        data: Array.from({ length: 50 }, () => ({
+          x: faker.datatype.number({ min: -negativeValue, max: negativeValue }),
+          y: faker.datatype.number({ min: -negativeValue, max: negativeValue }),
+          r: faker.datatype.number({ min: 5, max: 20 }),
+        })),
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+      {
+        label: "Positive Reports",
+        data: Array.from({ length: 50 }, () => ({
+          x: faker.datatype.number({ min: -positiveValue, max: positiveValue }),
+          y: faker.datatype.number({ min: -positiveValue, max: positiveValue }),
+          r: faker.datatype.number({ min: 5, max: 20 }),
+        })),
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
+      },
+    ],
+  };
 
   const getPatientFunc = async () => {
     const data = await getLoggedPatient();
     setPatient(data);
+  };
+
+  const getReports = async () => {
+    const data = await getAllPatientReports();
+    var positiveArray = data.filter(function (el) {
+      return el.status === "1";
+    });
+    var negativeArray = data.filter(function (el) {
+      return el.status === "2";
+    });
+    setPositiveValue(positiveArray.length);
+    setNegativeValue(negativeArray.length);
   };
 
   return (

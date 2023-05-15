@@ -223,6 +223,30 @@ func (c *Chaincode) GetTestsByPatientID(ctx CustomTransactionContextInterface, p
 	return tests, nil
 }
 
+func (c *Chaincode) UpdateReportStatus(ctx CustomTransactionContextInterface, reportID string, status string) (bool, error) {
+	// Get the report with the given ID
+	report, err := c.GetReportByID(ctx, reportID)
+	if err != nil {
+		return false, fmt.Errorf("failed to get report: %v", err)
+	}
+
+	report.Status = status
+
+	// Serialize the updated report document
+	reportJSON, err := json.Marshal(report)
+	if err != nil {
+		return false, fmt.Errorf("failed to serialize report: %v", err)
+	}
+
+	// Put the updated report document back into the ledger
+	err = ctx.GetStub().PutState(report.DocTyp+report.ID, reportJSON)
+	if err != nil {
+		return false, fmt.Errorf("failed to update report: %v", err)
+	}
+
+	return true, nil
+}
+
 func (c *Chaincode) UpdateReportComment(ctx CustomTransactionContextInterface, reportID, commentID, newComment string) (bool, error) {
 	// Get the report with the given ID
 	report, err := c.GetReportByID(ctx, reportID)

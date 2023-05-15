@@ -178,7 +178,7 @@ const PatientReports = () => {
       render: (_, { status }) =>
         status === "0" ? (
           <Tag color="orange-inverse" key={status}>
-            Positive
+            Pending
           </Tag>
         ) : status === "1" ? (
           <Tag color="green-inverse" key={status}>
